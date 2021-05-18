@@ -54,7 +54,7 @@
 ![image](https://user-images.githubusercontent.com/20077391/118641888-a959f100-b815-11eb-959e-d5ff2be6d610.png)
 
 ### 부적격 이벤트 탈락
-![image](https://user-images.githubusercontent.com/487999/79683612-4b4f8880-8266-11ea-9519-7e084524a462.png)
+![image](https://user-images.githubusercontent.com/20077391/118643575-b2e45880-b817-11eb-9720-7918351c5fbb.png)
 
     - 과정중 도출된 잘못된 도메인 이벤트들을 걸러내는 작업을 수행함
         - 주문시>메뉴카테고리선택됨, 주문시>메뉴검색됨 :  UI 의 이벤트이지, 업무적인 의미의 이벤트가 아니라서 제외
