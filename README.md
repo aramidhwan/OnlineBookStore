@@ -47,11 +47,11 @@
 
 
 ## Event Storming 결과
-* MSAEz 로 모델링한 이벤트스토밍 결과:  ![image](https://user-images.githubusercontent.com/20077391/118641888-a959f100-b815-11eb-959e-d5ff2be6d610.png)
+* MSAEz 로 모델링한 이벤트스토밍 결과:  
 
 
 ### 이벤트 도출
-![image](https://user-images.githubusercontent.com/20077391/118488976-443fc600-b757-11eb-8bf1-c47df2883dd4.png)
+![image](https://user-images.githubusercontent.com/20077391/118641888-a959f100-b815-11eb-959e-d5ff2be6d610.png)
 
 ### 부적격 이벤트 탈락
 ![image](https://user-images.githubusercontent.com/487999/79683612-4b4f8880-8266-11ea-9519-7e084524a462.png)
