@@ -94,7 +94,7 @@
 
 ### 완성된 1차 모형
 
-![image](https://user-images.githubusercontent.com/487999/79683646-63bfa300-8266-11ea-9bc5-c0b650507ac8.png)
+![image](https://user-images.githubusercontent.com/9324206/118654795-e4632100-b823-11eb-8afa-5eea9803b208.png)
 
     - View Model 추가
 
