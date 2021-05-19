@@ -64,51 +64,34 @@
 ### 부적격 이벤트 탈락
 ![image](https://user-images.githubusercontent.com/20077391/118743271-fe851980-b88c-11eb-846a-b429ae67849c.png)
 
-### 액터, 커맨드 부착하여 읽기 좋게
-![image](https://user-images.githubusercontent.com/487999/79683614-4ee30f80-8266-11ea-9a50-68cdff2dcc46.png)
-
-### 어그리게잇으로 묶기
-![image](https://user-images.githubusercontent.com/487999/79683618-52769680-8266-11ea-9c21-48d6812444ba.png)
-
-    - app의 Order, store 의 주문처리, 결제의 결제이력은 그와 연결된 command 와 event 들에 의하여 트랜잭션이 유지되어야 하는 단위로 그들 끼리 묶어줌
-
-### 바운디드 컨텍스트로 묶기
-
-![image](https://user-images.githubusercontent.com/487999/79683625-560a1d80-8266-11ea-9790-40d68a36d95d.png)
-
-    - 도메인 서열 분리 
-        - Core Domain:  app(front), store : 없어서는 안될 핵심 서비스이며, 연견 Up-time SLA 수준을 99.999% 목표, 배포주기는 app 의 경우 1주일 1회 미만, store 의 경우 1개월 1회 미만
-        - Supporting Domain:   marketing, customer : 경쟁력을 내기위한 서비스이며, SLA 수준은 연간 60% 이상 uptime 목표, 배포주기는 각 팀의 자율이나 표준 스프린트 주기가 1주일 이므로 1주일 1회 이상을 기준으로 함.
-        - General Domain:   pay : 결제서비스로 3rd Party 외부 서비스를 사용하는 것이 경쟁력이 높음 (핑크색으로 이후 전환할 예정)
-
-### 폴리시 부착 (괄호는 수행주체, 폴리시 부착을 둘째단계에서 해놔도 상관 없음. 전체 연계가 초기에 드러남)
-
-![image](https://user-images.githubusercontent.com/487999/79683633-5aced180-8266-11ea-8f42-c769eb88dfb1.png)
-
-### 폴리시의 이동과 컨텍스트 매핑 (점선은 Pub/Sub, 실선은 Req/Resp)
-
-![image](https://user-images.githubusercontent.com/487999/79683641-5f938580-8266-11ea-9fdb-4e80ff6642fe.png)
 
 ### 완성된 1차 모형
 
 ![image](https://user-images.githubusercontent.com/20077391/118757923-f4711400-b8a8-11eb-9011-303083513a99.png)
 
-    - View Model 추가
 
 ### 1차 완성본에 대한 기능적/비기능적 요구사항을 커버하는지 검증
 
 ![image](https://user-images.githubusercontent.com/487999/79684167-3ecd2f00-826a-11ea-806a-957362d197e3.png)
 
-    - 고객이 메뉴를 선택하여 주문한다 (ok)
-    - 고객이 결제한다 (ok)
-    - 주문이 되면 주문 내역이 입점상점주인에게 전달된다 (ok)
-    - 상점주인이 확인하여 요리해서 배달 출발한다 (ok)
+    1. 고객이 도서를 주문 및 결제한다.
+    2. 고객이 주문을 취소할 수 있다.
+    3. 주문이 취소되면 결제가 취소된다.
+    4. 관리자가 신규도서를 등록한다.
+    5. 관리자가 도서 재고를 추가한다.
+    6. 고객은 회원가입을 한다.
+    7. 도서 주문 실적에 따라 고객의 마일리지 및 등급을 관리한다.
+    8. 신규 도서가 등록되면 기존 고객에게 알려준다. 
+    9. 도서가 재입고되면 재고부족으로 못 구매한 고객에게 알려준다. 
 
 ![image](https://user-images.githubusercontent.com/487999/79684170-47256a00-826a-11ea-9777-e16fafff519a.png)
-    - 고객이 주문을 취소할 수 있다 (ok)
-    - 주문이 취소되면 배달이 취소된다 (ok)
-    - 고객이 주문상태를 중간중간 조회한다 (View-green sticker 의 추가로 ok) 
-    - 주문상태가 바뀔 때 마다 카톡으로 알림을 보낸다 (?)
+
+    1. 주문 시 재고가 부족할 경우 주문이 되지 않는다.
+    2. 결제가 되지 않은 주문건은 아예 거래가 성립되지 않아야 한다.
+    3. 고객/마케팅/배달 관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다.
+    4. 고객시스템이 과중되면 사용자를 잠시동안 받지 않고 재접속하도록 유도한다.
+    5. 고객이 마이페이지 통해 주문상태를 확인할 수 있어야 한다.
+    6. 신규 도서가 등록되면 가입회원들에게 알림을 줄 수 있어야 한다.
 
 
 ### 모델 수정
