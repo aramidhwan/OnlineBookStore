@@ -59,13 +59,10 @@
 
 
 ### 이벤트 도출
-![image](https://user-images.githubusercontent.com/20077391/118641888-a959f100-b815-11eb-959e-d5ff2be6d610.png)
+![image](https://user-images.githubusercontent.com/20077391/118743015-7868d300-b88c-11eb-9460-cca173f9495b.png)
 
 ### 부적격 이벤트 탈락
-![image](https://user-images.githubusercontent.com/20077391/118643575-b2e45880-b817-11eb-9720-7918351c5fbb.png)
-
-    - 과정중 도출된 잘못된 도메인 이벤트들을 걸러내는 작업을 수행함
-        - 주문시>메뉴카테고리선택됨, 주문시>메뉴검색됨 :  UI 의 이벤트이지, 업무적인 의미의 이벤트가 아니라서 제외
+![image](https://user-images.githubusercontent.com/20077391/118743271-fe851980-b88c-11eb-846a-b429ae67849c.png)
 
 ### 액터, 커맨드 부착하여 읽기 좋게
 ![image](https://user-images.githubusercontent.com/487999/79683614-4ee30f80-8266-11ea-9a50-68cdff2dcc46.png)
