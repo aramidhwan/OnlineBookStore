@@ -2,7 +2,6 @@ package onlinebookstore;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
-import java.util.List;
 import java.util.Date;
 
 @Entity
@@ -22,38 +21,42 @@ public class Order {
 
     @PostPersist
     public void onPostPersist(){
-        Ordered ordered = new Ordered();
-        BeanUtils.copyProperties(this, ordered);
-        ordered.publishAfterCommit();
-
-        //Following code causes dependency to external APIs
-        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
-
         onlinebookstore.external.Book book = new onlinebookstore.external.Book();
-        // mappings goes here
-        Application.applicationContext.getBean(onlinebookstore.external.BookService.class)
-            .checkAndModifyStock(book);
+        // Req/Res Calling
+        boolean bResult = OrderApplication.applicationContext.getBean(onlinebookstore.external.BookService.class)
+            .checkAndModifyStock(this.bookId, this.qty);
 
-
-        OutOfStocked outOfStocked = new OutOfStocked();
-        BeanUtils.copyProperties(this, outOfStocked);
-        outOfStocked.publishAfterCommit();
-
-
-        StatusChanged statusChanged = new StatusChanged();
-        BeanUtils.copyProperties(this, statusChanged);
-        statusChanged.publishAfterCommit();
-
+        if(bResult)
+        {
+            Ordered ordered = new Ordered();
+            BeanUtils.copyProperties(this, ordered);
+            this.status="Ordered";
+            ordered.publishAfterCommit();
+            System.out.println("PUB :: Ordered + orderId="+this.orderId);
+        }
+        else
+        {
+            OutOfStocked outOfStocked = new OutOfStocked();
+            BeanUtils.copyProperties(this, outOfStocked);
+            outOfStocked.publish();
+            System.out.println("PUB :: OutOfStocked");
+        }
 
     }
 
-    @PrePersist
-    public void onPrePersist(){
+    @PreUpdate
+    public void onPreUpdate(){
+        System.out.println("status changed to " + this.status.toString());
+        StatusChanged statusChanged = new StatusChanged();
+        BeanUtils.copyProperties(this, statusChanged);
+        statusChanged.publishAfterCommit();
+    }
+
+    @PreRemove
+    public void onPreRemove(){
         OrderCancelled orderCancelled = new OrderCancelled();
         BeanUtils.copyProperties(this, orderCancelled);
         orderCancelled.publishAfterCommit();
-
-
     }
 
 

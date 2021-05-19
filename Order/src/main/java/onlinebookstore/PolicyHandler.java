@@ -1,8 +1,6 @@
 package onlinebookstore;
 
 import onlinebookstore.config.kafka.KafkaProcessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -14,13 +12,12 @@ public class PolicyHandler{
 
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverDeliveryStarted_UpdateState(@Payload DeliveryStarted deliveryStarted){
-
         if(!deliveryStarted.validate()) return;
 
-        System.out.println("\n\n##### listener UpdateState : " + deliveryStarted.toJson() + "\n\n");
+        System.out.println("SUB :: DeliveryStarted-UpdateState deliveryId="+ deliveryStarted.getDeliveryid() + ", orderId=" + deliveryStarted.getOrderid());
 
-        // Sample Logic //
-        Order order = new Order();
+        Order order = orderRepository.findById(deliveryStarted.getOrderid()).get();
+        order.setStatus("DeliveryStarted");
         orderRepository.save(order);
             
     }
@@ -29,12 +26,12 @@ public class PolicyHandler{
 
         if(!deliveryCancelled.validate()) return;
 
-        System.out.println("\n\n##### listener UpdateState : " + deliveryCancelled.toJson() + "\n\n");
+        System.out.println("SUB :: DeliveryCancelled-UpdateState deliveryId="+ deliveryCancelled.getDeliveryid() + ", orderId=" + deliveryCancelled.getOrderid());
 
-        // Sample Logic //
-        Order order = new Order();
+        Order order = orderRepository.findById(deliveryCancelled.getOrderid()).get();
+        order.setStatus("DeliveryCancelled");
         orderRepository.save(order);
-            
+
     }
 
 
