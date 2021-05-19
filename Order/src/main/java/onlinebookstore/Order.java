@@ -21,7 +21,7 @@ public class Order {
 
     @PostPersist
     public void onPostPersist(){
-        onlinebookstore.external.Book book = new onlinebookstore.external.Book();
+        //onlinebookstore.external.Book book = new onlinebookstore.external.Book();
         // Req/Res Calling
         boolean bResult = OrderApplication.applicationContext.getBean(onlinebookstore.external.BookService.class)
             .checkAndModifyStock(this.bookId, this.qty);
@@ -29,8 +29,8 @@ public class Order {
         if(bResult)
         {
             Ordered ordered = new Ordered();
-            BeanUtils.copyProperties(this, ordered);
             this.status="Ordered";
+            BeanUtils.copyProperties(this, ordered);
             ordered.publishAfterCommit();
             System.out.println("PUB :: Ordered + orderId="+this.orderId);
         }
@@ -38,6 +38,7 @@ public class Order {
         {
             OutOfStocked outOfStocked = new OutOfStocked();
             BeanUtils.copyProperties(this, outOfStocked);
+            outOfStocked.setOrderDt(new Date());
             outOfStocked.publish();
             System.out.println("PUB :: OutOfStocked");
         }
