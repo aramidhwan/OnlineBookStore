@@ -11,7 +11,7 @@ spring:
         - id: CustomerCenter
           uri: http://localhost:8081
           predicates:
-            - Path= /customers/**/outOfStockOrders/**/myPages/**
+            - Path= /customers/**,/outOfStockOrders/**,/myPages/**
         - id: Book
           uri: http://localhost:8082
           predicates:
@@ -50,7 +50,7 @@ spring:
         - id: CustomerCenter
           uri: http://CustomerCenter:8080
           predicates:
-            - Path= /customers/**/outOfStockOrders/**/myPages/**
+            - Path= /customers/**,/outOfStockOrders/**,/myPages/**
         - id: Book
           uri: http://Book:8080
           predicates:
