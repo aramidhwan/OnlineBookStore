@@ -26,6 +26,10 @@ public class Order {
         boolean bResult = OrderApplication.applicationContext.getBean(onlinebookstore.external.BookService.class)
             .checkAndModifyStock(this.bookId, this.qty);
 
+        this.price = qty * 10000;
+        this.orderDt = new Date();
+        this.paymentId = 100000001;
+                
         if(bResult)
         {
             Ordered ordered = new Ordered();
@@ -37,8 +41,8 @@ public class Order {
         else
         {
             OutOfStocked outOfStocked = new OutOfStocked();
+            this.status="OutOfStocked";
             BeanUtils.copyProperties(this, outOfStocked);
-            outOfStocked.setOrderDt(new Date());
             outOfStocked.publish();
             System.out.println("PUB :: OutOfStocked");
         }
