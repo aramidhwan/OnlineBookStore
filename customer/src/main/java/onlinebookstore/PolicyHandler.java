@@ -36,34 +36,8 @@ public class PolicyHandler{
         customerRepository.save(customer);
             
     }
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverOrderCancelled_UpdateMileageAndGrade(@Payload OrderCancelled orderCancelled){
-
-        if(!orderCancelled.validate()) return;
-
-        System.out.println("\n\n##### listener UpdateMileageAndGrade : " + orderCancelled.toJson() + "\n\n");
-
-        // Sample Logic //
-        Customer customer = new Customer();
-        customerRepository.save(customer);
             
-    }
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverOrderCancelled_UpdateMileageAndGrade(@Payload OrderCancelled orderCancelled){
-
-        if(!orderCancelled.validate()) return;
-
-        System.out.println("\n\n##### listener UpdateMileageAndGrade : " + orderCancelled.toJson() + "\n\n");
-
-        // Sample Logic //
-        Customer customer = new Customer();
-        customerRepository.save(customer);
-            
-    }
-
-
     @StreamListener(KafkaProcessor.INPUT)
     public void whatever(@Payload String eventString){}
-
 
 }

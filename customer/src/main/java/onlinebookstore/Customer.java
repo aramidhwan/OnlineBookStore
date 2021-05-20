@@ -10,7 +10,7 @@ import java.util.Date;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long customerId;
     private String name;
     private String grade;
