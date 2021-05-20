@@ -17,8 +17,7 @@ public class PolicyHandler{
         if(orderCancelled.validate()){
             System.out.println("##### listener cancelOrder IncreaseStock : " + orderCancelled.toJson());
             Book book = bookRepository.findByBookId(Long.valueOf(orderCancelled.getBookId()));
-            book.setStockQty(book.getStockQty() + orderCancelled.getQty());
-            book.setStatus("stockIncrease");
+            book.setStock(book.getStock() + orderCancelled.getQty());
             bookRepository.save(book);
         }
     }

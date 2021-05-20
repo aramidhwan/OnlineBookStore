@@ -23,9 +23,9 @@ import java.util.List;
 
    Book book = bookRepository.findByBookId(bookId);
    // 현 재고보다 주문수량이 적거나 같은경우에만 true 회신
-   if( book.getStockQty() >= qty){
+   if( book.getStock() >= qty){
     status = true;
-    book.setStockQty(book.getStockQty() - qty); // 주문수량만큼 재고 감소
+    book.setStock(book.getStock() - qty); // 주문수량만큼 재고 감소
     bookRepository.save(book);
    }
 

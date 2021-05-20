@@ -19,12 +19,12 @@ public class Order {
     private Date orderDt;
     private String status;
 
-    @PostPersist
-    public void onPostPersist(){
+    @PrePersist
+    public void onPrePersist(){
         //onlinebookstore.external.Book book = new onlinebookstore.external.Book();
         // Req/Res Calling
         boolean bResult = OrderApplication.applicationContext.getBean(onlinebookstore.external.BookService.class)
-            .checkAndModifyStock(this.bookId, this.qty);
+            .chkAndModifyStock(this.bookId, this.qty);
 
         this.price = qty * 10000;
         this.orderDt = new Date();
@@ -32,26 +32,36 @@ public class Order {
                 
         if(bResult)
         {
-            Ordered ordered = new Ordered();
             this.status="Ordered";
-            BeanUtils.copyProperties(this, ordered);
-            ordered.publishAfterCommit();
-            System.out.println("PUB :: Ordered + orderId="+this.orderId);
         }
         else
         {
-            OutOfStocked outOfStocked = new OutOfStocked();
             this.status="OutOfStocked";
-            BeanUtils.copyProperties(this, outOfStocked);
-            outOfStocked.publish();
-            System.out.println("PUB :: OutOfStocked");
         }
 
     }
 
+    @PostPersist
+    public void onPostPersist(){
+        if(this.status.equals("Ordered"))
+        {
+            Ordered ordered = new Ordered();
+            BeanUtils.copyProperties(this, ordered);
+            ordered.publishAfterCommit();
+            System.out.println("** PUB :: Ordered : orderId="+this.orderId);
+        }
+        else
+        {
+            OutOfStocked outOfStocked = new OutOfStocked();
+            BeanUtils.copyProperties(this, outOfStocked);
+            outOfStocked.publish();
+            System.out.println("** PUB :: OutOfStocked : orderId="+this.orderId);
+        }
+    }
+
     @PreUpdate
     public void onPreUpdate(){
-        System.out.println("status changed to " + this.status.toString());
+        System.out.println("** PUB :: StatusChanged : status changed to " + this.status.toString());
         StatusChanged statusChanged = new StatusChanged();
         BeanUtils.copyProperties(this, statusChanged);
         statusChanged.publishAfterCommit();
@@ -59,11 +69,11 @@ public class Order {
 
     @PreRemove
     public void onPreRemove(){
+        System.out.println("** PUB :: OrderCancelled : orderId" + this.orderId);
         OrderCancelled orderCancelled = new OrderCancelled();
         BeanUtils.copyProperties(this, orderCancelled);
         orderCancelled.publishAfterCommit();
     }
-
 
     public Long getOrderId() {
         return orderId;
@@ -72,6 +82,7 @@ public class Order {
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
     }
+
     public Long getBookId() {
         return bookId;
     }
