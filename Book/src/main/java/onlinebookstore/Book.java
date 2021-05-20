@@ -26,11 +26,16 @@ public class Book {
 
     @PostUpdate
     public void onPostUpdate(){
-        // 책 수정(제목,재고,상태..)
-        BookModified bookModified = new BookModified();
-        BeanUtils.copyProperties(this, bookModified);
-        bookModified.publishAfterCommit();
 
+
+        StockDecreased stockDecreased = new StockDecreased();
+        BeanUtils.copyProperties(this, stockDecreased);
+        stockDecreased.publishAfterCommit();
+
+
+        StockIncreased stockIncreased = new StockIncreased();
+        BeanUtils.copyProperties(this, stockIncreased);
+        stockIncreased.publishAfterCommit();
 
     }
 
