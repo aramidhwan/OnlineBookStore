@@ -12,6 +12,7 @@ public class Ordered extends AbstractEvent {
 
     public Long getOrderId() {
         return orderId;
+        System.out.println("a");
     }
 
     public void setOrderId(Long orderId) {
