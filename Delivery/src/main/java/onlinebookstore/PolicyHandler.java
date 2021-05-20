@@ -38,7 +38,7 @@ public class PolicyHandler{
         // Sample Logic modify- 2021.05.19 //
         Delivery delivery = new Delivery();
         
-        delivery.setOrderId(ordercancelled.getOrderid());
+        //delivery.setOrderId(ordercancelled.getOrderid());
         delivery.setDeliverystatus(ordercancelled.getStatus());        
         
         deliveryRepository.save(delivery);
