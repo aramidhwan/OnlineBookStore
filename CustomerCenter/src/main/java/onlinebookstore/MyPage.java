@@ -1,7 +1,6 @@
 package onlinebookstore;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name="MyPage_table")

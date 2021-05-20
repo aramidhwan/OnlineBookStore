@@ -30,7 +30,5 @@ public class StockIncreased extends AbstractEvent {
     public void setBookId(Long id) {
         this.bookId = id;
     }
-    
-    
 }
 

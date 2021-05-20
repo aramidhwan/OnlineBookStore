@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PolicyHandler{
 	@Autowired
-	CustomerRepository customerRepository ;
+	MarketingTargetRepository marketingTargetRepository ;
 	@Autowired
 	OutOfStockOrderRepository outOfStockOrderRepository ;
 
@@ -23,13 +23,13 @@ public class PolicyHandler{
 
         if(!bookRegistred.validate()) return;
         
-        Iterable<Customer> iterable = customerRepository.findAll();
+        Iterable<MarketingTarget> iterable = marketingTargetRepository.findAll();
         
         // Send SNS with iterable HERE.
-        iterable.forEach(new Consumer<Customer>() {
+        iterable.forEach(new Consumer<MarketingTarget>() {
 			@Override
-			public void accept(Customer customer) {
-	            System.out.println("\n##### Send SNS to Customer("+ customer.getEmail() +") that the new book [" + bookRegistred.getTitle() + "] is arrived.");
+			public void accept(MarketingTarget marketingTarget) {
+	            System.out.println("\n##### Send SNS to Customer("+ marketingTarget.getEmail() +") that the new book [" + bookRegistred.getTitle() + "] is arrived.");
 			}
         });
 
@@ -43,11 +43,11 @@ public class PolicyHandler{
         List<OutOfStockOrder> list = outOfStockOrderRepository.findByBookId(stockIncreased.getBookId()) ;
         
         for (OutOfStockOrder outOfStockOrder:list) {
-        	Optional<Customer> optional = customerRepository.findByCustomerId(outOfStockOrder.getCustomerId()) ;
+        	Optional<MarketingTarget> optional = marketingTargetRepository.findByCustomerId(outOfStockOrder.getCustomerId()) ;
         	
         	if (optional.isPresent()) {
-        		Customer customer = optional.get();
-            	System.out.println("\n##### Send SNS to Customer("+ customer.getEmail() +") that the book [" + stockIncreased.getTitle() + "] is restocked.");
+        		MarketingTarget marketingTarget = optional.get();
+            	System.out.println("\n##### Send SNS to Customer("+ marketingTarget.getEmail() +") that the book [" + stockIncreased.getTitle() + "] is restocked.");
         	}
         }
     }

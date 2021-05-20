@@ -6,13 +6,8 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
 @Service
 public class OutOfStockOrderViewHandler {
-
 
     @Autowired
     private OutOfStockOrderRepository outOfStockOrderRepository;
@@ -26,7 +21,7 @@ public class OutOfStockOrderViewHandler {
             // view 객체 생성
             OutOfStockOrder outOfStockOrder = new OutOfStockOrder();
             // view 객체에 이벤트의 Value 를 set 함
-            outOfStockOrder.setOrderId(outOfStocked.getId());
+            outOfStockOrder.setOrderId(outOfStocked.getOrderId());
             outOfStockOrder.setBookId(outOfStocked.getBookId());
             outOfStockOrder.setCustomerId(outOfStocked.getCustomerId());
             outOfStockOrder.setOrderDt(outOfStocked.getOrderDt());

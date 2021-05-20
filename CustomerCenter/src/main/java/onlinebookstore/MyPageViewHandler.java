@@ -6,9 +6,7 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MyPageViewHandler {
@@ -27,7 +25,7 @@ public class MyPageViewHandler {
             MyPage myPage = new MyPage();
             // view 객체에 이벤트의 Value 를 set 함
             myPage.setCustomerId(ordered.getCustomerId());
-            myPage.setOrderId(ordered.getId());
+            myPage.setOrderId(ordered.getOrderId());
             myPage.setOrderStatus(ordered.getStatus());
             // view 레파지토리에 save
             myPageRepository.save(myPage);
@@ -43,7 +41,7 @@ public class MyPageViewHandler {
             if (!orderCancelled.validate()) return;
             
             // view 객체 조회
-            List<MyPage> myPageList = myPageRepository.findByOrderId(orderCancelled.getId());
+            List<MyPage> myPageList = myPageRepository.findByOrderId(orderCancelled.getOrderId());
             
             for(MyPage myPage : myPageList){
                 // view 객체에 이벤트의 eventDirectValue 를 set 함
@@ -62,7 +60,7 @@ public class MyPageViewHandler {
             if (!statusChanged.validate()) return;
             
             // view 객체 조회
-            List<MyPage> myPageList = myPageRepository.findByOrderId(statusChanged.getId());
+            List<MyPage> myPageList = myPageRepository.findByOrderId(statusChanged.getOrderId());
             for(MyPage myPage : myPageList){
                 // view 객체에 이벤트의 eventDirectValue 를 set 함
                 myPage.setOrderStatus(statusChanged.getStatus());
