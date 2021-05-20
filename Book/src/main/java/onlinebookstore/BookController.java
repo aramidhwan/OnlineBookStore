@@ -11,7 +11,26 @@ import java.util.List;
 
  @RestController
  public class BookController {
+ @Autowired  BookRepository bookRepository;
 
+  @RequestMapping(value = "/books/chkAndModifyStock",
+          method = RequestMethod.GET,
+          produces = "application/json;charset=UTF-8")
+  public boolean chkAndModifyStock(HttpServletRequest request, HttpServletResponse response) throws Exception {
+   boolean status = false;
+   Long bookId = Long.valueOf(request.getParameter("bookId"));
+   int qty = Integer.parseInt(request.getParameter("qty"));
 
+   Book book = bookRepository.findByBookId(bookId);
+   // 현 재고보다 주문수량이 적거나 같은경우에만 true 회신
+   if( book.getStockQty() >= qty){
+    status = true;
+    book.setStockQty(book.getStockQty() - qty); // 주문수량만큼 재고 감소
+    bookRepository.save(book);
+   }
+
+   System.out.println("##### /books/chkAndModifyStock  called #####");
+   return status;
+  }
 
  }

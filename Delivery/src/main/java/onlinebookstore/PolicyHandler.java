@@ -19,8 +19,12 @@ public class PolicyHandler{
 
         System.out.println("\n\n##### listener Delivery : " + ordered.toJson() + "\n\n");
 
-        // Sample Logic //
+        // Sample Logic modify- 2021.05.19 //
         Delivery delivery = new Delivery();
+        
+        delivery.setOrderId(ordered.getOrderid());
+        delivery.setDeliverystatus(ordered.getStatus());         
+        
         deliveryRepository.save(delivery);
             
     }
@@ -31,8 +35,12 @@ public class PolicyHandler{
 
         System.out.println("\n\n##### listener CancelDelivery : " + orderCancelled.toJson() + "\n\n");
 
-        // Sample Logic //
+        // Sample Logic modify- 2021.05.19 //
         Delivery delivery = new Delivery();
+        
+        //delivery.setOrderId(ordercancelled.getOrderid());
+        delivery.setDeliverystatus(ordercancelled.getStatus());        
+        
         deliveryRepository.save(delivery);
             
     }

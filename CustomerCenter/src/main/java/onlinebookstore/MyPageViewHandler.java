@@ -29,7 +29,7 @@ public class MyPageViewHandler {
             myPage.setCustomerId(ordered.getCustomerId());
             myPage.setOrderId(ordered.getId());
             myPage.setOrderStatus(ordered.getStatus());
-            // view 레파지 토리에 save
+            // view 레파지토리에 save
             myPageRepository.save(myPage);
         
         }catch (Exception e){
@@ -37,13 +37,14 @@ public class MyPageViewHandler {
         }
     }
 
-
     @StreamListener(KafkaProcessor.INPUT)
     public void whenOrderCancelled_then_UPDATE_1(@Payload OrderCancelled orderCancelled) {
         try {
             if (!orderCancelled.validate()) return;
-                // view 객체 조회
+            
+            // view 객체 조회
             List<MyPage> myPageList = myPageRepository.findByOrderId(orderCancelled.getId());
+            
             for(MyPage myPage : myPageList){
                 // view 객체에 이벤트의 eventDirectValue 를 set 함
                 myPage.setOrderStatus(orderCancelled.getStatus());
@@ -59,7 +60,8 @@ public class MyPageViewHandler {
     public void whenStatusChanged_then_UPDATE_2(@Payload StatusChanged statusChanged) {
         try {
             if (!statusChanged.validate()) return;
-                // view 객체 조회
+            
+            // view 객체 조회
             List<MyPage> myPageList = myPageRepository.findByOrderId(statusChanged.getId());
             for(MyPage myPage : myPageList){
                 // view 객체에 이벤트의 eventDirectValue 를 set 함

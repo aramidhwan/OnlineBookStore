@@ -1,19 +1,18 @@
 package onlinebookstore;
 
 import javax.persistence.*;
-import java.util.List;
+
+import java.util.Date;
 
 @Entity
 @Table(name="OutOfStockOrder_table")
 public class OutOfStockOrder {
 
         @Id
-        @GeneratedValue(strategy=GenerationType.AUTO)
         private Long orderId;
         private Long bookId;
         private Long customerId;
         private Date orderDt;
-
 
         public Long getOrderId() {
             return orderId;

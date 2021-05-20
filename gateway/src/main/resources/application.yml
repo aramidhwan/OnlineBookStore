@@ -11,7 +11,7 @@ spring:
         - id: CustomerCenter
           uri: http://localhost:8081
           predicates:
-            - Path= /customers/**,/outOfStockOrders/**,/myPages/**
+            - Path= /myPages/**
         - id: Book
           uri: http://localhost:8082
           predicates:
