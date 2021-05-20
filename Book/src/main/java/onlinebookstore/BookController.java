@@ -26,7 +26,6 @@ import java.util.List;
    if( book.getStockQty() >= qty){
     status = true;
     book.setStockQty(book.getStockQty() - qty); // 주문수량만큼 재고 감소
-    book.setStatus("stockDecreased"); // 재고감소 알림
     bookRepository.save(book);
    }
 
