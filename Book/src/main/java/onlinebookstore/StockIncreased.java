@@ -1,7 +1,7 @@
 
 package onlinebookstore;
 
-public class StockeIncreased extends AbstractEvent {
+public class StockIncreased extends AbstractEvent {
 
     private Long id;
 
