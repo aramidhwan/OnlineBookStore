@@ -14,20 +14,21 @@ public class PolicyHandler{
 
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverOrderCancelled_IncreaseStock(@Payload OrderCancelled orderCancelled){
-
-        if(!orderCancelled.validate()) return;
-
-        System.out.println("\n\n##### listener IncreaseStock : " + orderCancelled.toJson() + "\n\n");
-
-        // Sample Logic //
-        Book book = new Book();
-        bookRepository.save(book);
-            
+        if(orderCancelled.validate()){
+            System.out.println("##### listener cancelOrder IncreaseStock : " + orderCancelled.toJson());
+            Book book = bookRepository.findByBookId(Long.valueOf(orderCancelled.getBookId()));
+            book.setStockQty(book.getStockQty() + orderCancelled.getQty());
+            book.setStatus("stockIncrease");
+            bookRepository.save(book);
+        }
     }
 
-
     @StreamListener(KafkaProcessor.INPUT)
-    public void whatever(@Payload String eventString){}
-
-
+    public void whatever(@Payload String eventString){
+        System.out.println();
+        System.out.println();
+        System.out.println("##### whatever test" );
+        System.out.println();
+        System.out.println();
+    }
 }
