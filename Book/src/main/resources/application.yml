@@ -6,9 +6,9 @@ spring:
   profiles: default
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dschema?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
-    username: shshin
-    password: shin22
+    url: jdbc:mysql://localhost:3306/bookdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    username: bookAdmin
+    password: book
   jpa:
     properties:
       hibernate:
@@ -16,7 +16,7 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL57Dialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       generate-ddl: true
   cloud:
     stream:
