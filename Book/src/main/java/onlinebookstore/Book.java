@@ -17,19 +17,19 @@ public class Book {
 
     @PostPersist
     public void onPostPersist(){
+        // 책 등록 
         BookRegistred bookRegistred = new BookRegistred();
         BeanUtils.copyProperties(this, bookRegistred);
         bookRegistred.publishAfterCommit();
+    }
 
 
-        StockDecreased stockDecreased = new StockDecreased();
-        BeanUtils.copyProperties(this, stockDecreased);
-        stockDecreased.publishAfterCommit();
-
-
-        StockeIncreased stockeIncreased = new StockeIncreased();
-        BeanUtils.copyProperties(this, stockeIncreased);
-        stockeIncreased.publishAfterCommit();
+    @PostUpdate
+    public void onPostUpdate(){
+        // 책 수정(제목,재고,상태..)
+        BookModified bookModified = new BookModified();
+        BeanUtils.copyProperties(this, bookModified);
+        bookModified.publishAfterCommit();
 
 
     }
