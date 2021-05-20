@@ -20,6 +20,7 @@ public class Delivery {
     public void onPostPersist(){
         DeliveryStarted deliveryStarted = new DeliveryStarted();
         BeanUtils.copyProperties(this, deliveryStarted);
+        deliveryStarted.setStatus("Delivery Start");
         deliveryStarted.publishAfterCommit();
 
 
@@ -29,6 +30,7 @@ public class Delivery {
     public void onPrePersist(){
         DeliveryCancelled deliveryCancelled = new DeliveryCancelled();
         BeanUtils.copyProperties(this, deliveryCancelled);
+        deliveryStarted.setStatus("Delivery Cancel");
         deliveryCancelled.publishAfterCommit();
 
 
