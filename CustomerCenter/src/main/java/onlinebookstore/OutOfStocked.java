@@ -1,5 +1,7 @@
 package onlinebookstore;
 
+import java.util.Date;
+
 public class OutOfStocked extends AbstractEvent {
 
     private Long id;
