@@ -12,7 +12,6 @@ public class Ordered extends AbstractEvent {
 
     public Long getOrderId() {
         return orderId;
-        System.out.println("a");
     }
 
     public void setOrderId(Long orderId) {
@@ -26,7 +25,7 @@ public class Ordered extends AbstractEvent {
     public void setBookId(Long bookId) {
         this.bookId = bookId;
     }
-    
+
     public Integer getQty() {
         return qty;
     }
