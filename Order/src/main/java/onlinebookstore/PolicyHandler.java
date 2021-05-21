@@ -14,25 +14,26 @@ public class PolicyHandler{
     public void wheneverDeliveryStarted_UpdateState(@Payload DeliveryStarted deliveryStarted){
         if(!deliveryStarted.validate()) return;
 
-        System.out.println("SUB :: DeliveryStarted-UpdateState deliveryId="+ deliveryStarted.getDeliveryid() + ", orderId=" + deliveryStarted.getOrderid());
+        System.out.println("** SUB :: DeliveryStarted-UpdateState deliveryId="+ deliveryStarted.getDeliveryId() + ", orderId=" + deliveryStarted.getOrderId());
 
-        Order order = orderRepository.findById(deliveryStarted.getOrderid()).get();
-        order.setStatus("DeliveryStarted");
+        Order order = orderRepository.findById(deliveryStarted.getOrderId()).get();
+        order.setStatus(deliveryStarted.getDeliverystatus());
         orderRepository.save(order);
             
     }
+    /*
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverDeliveryCancelled_UpdateState(@Payload DeliveryCancelled deliveryCancelled){
 
         if(!deliveryCancelled.validate()) return;
 
-        System.out.println("SUB :: DeliveryCancelled-UpdateState deliveryId="+ deliveryCancelled.getDeliveryid() + ", orderId=" + deliveryCancelled.getOrderid());
+        System.out.println("SUB :: DeliveryCancelled-UpdateState deliveryId="+ deliveryCancelled.getDeliveryId() + ", orderId=" + deliveryCancelled.getOrderId());
 
-        Order order = orderRepository.findById(deliveryCancelled.getOrderid()).get();
-        order.setStatus("DeliveryCancelled");
+        Order order = orderRepository.findById(deliveryCancelled.getOrderId()).get();
+        order.setStatus(deliveryCancelled.getDeliverystatus());
         orderRepository.save(order);
 
-    }
+    }*/
 
 
     @StreamListener(KafkaProcessor.INPUT)

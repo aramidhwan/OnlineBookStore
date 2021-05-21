@@ -12,6 +12,7 @@ public class StatusChanged extends AbstractEvent {
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
     }
+    
     public String getStatus() {
         return status;
     }

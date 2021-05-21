@@ -14,6 +14,8 @@ public class Book {
     private Long bookId;
     private String title;
     private Integer stock;
+    @Transient
+    private Integer stockBeforeUpdate;
 
     @PostPersist
     public void onPostPersist(){
@@ -27,15 +29,18 @@ public class Book {
     @PostUpdate
     public void onPostUpdate(){
 
+        if ( getStock() < getStockBeforeUpdate() ) {
+            StockDecreased stockDecreased = new StockDecreased();
+            BeanUtils.copyProperties(this, stockDecreased);
+            stockDecreased.publishAfterCommit();
 
-        StockDecreased stockDecreased = new StockDecreased();
-        BeanUtils.copyProperties(this, stockDecreased);
-        stockDecreased.publishAfterCommit();
-
-
-        StockIncreased stockIncreased = new StockIncreased();
-        BeanUtils.copyProperties(this, stockIncreased);
-        stockIncreased.publishAfterCommit();
+        } else if ( getStock() > getStockBeforeUpdate() ) {
+            StockIncreased stockIncreased = new StockIncreased();
+            BeanUtils.copyProperties(this, stockIncreased);
+            stockIncreased.publishAfterCommit();
+        } else {
+            System.out.println("-----------------");
+        }
 
     }
 
@@ -62,6 +67,12 @@ public class Book {
         this.stock = stock;
     }
 
+    public Integer getStockBeforeUpdate() {
+        return stockBeforeUpdate;
+    }
+    public void setStockBeforeUpdate(Integer stockBeforeUpdate) {
+        this.stockBeforeUpdate = stockBeforeUpdate;
+    }
 
 
 
