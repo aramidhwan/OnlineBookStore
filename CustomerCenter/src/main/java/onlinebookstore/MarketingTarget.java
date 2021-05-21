@@ -1,6 +1,6 @@
 package onlinebookstore;
 
-import javax.persistence.*;
+import javax.persistence.*; 
 
 @Entity
 @Table(name="MarketingTarget_table")
