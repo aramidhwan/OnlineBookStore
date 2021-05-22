@@ -1,0 +1,73 @@
+server:
+  port: 8080
+---
+
+spring:
+  profiles: default
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/onlinebookstore?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    username: shshin
+    password: shin22
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL57Dialect
+#    hibernate:
+#      ddl-auto: create
+#      generate-ddl: true
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+        streams:
+          binder:
+            configuration:
+              default:
+                key:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      bindings:
+        event-in:
+          group: CustomerCenter
+          destination: onlinebookstore
+          contentType: application/json
+        event-out:
+          destination: onlinebookstore
+          contentType: application/json
+
+logging:
+  level:
+    org.hibernate.type: trace
+    org.springframework.cloud: debug
+server:
+  port: 8081
+---
+
+spring:
+  profiles: docker
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: my-kafka.kafka.svc.cluster.local:9092
+        streams:
+          binder:
+            configuration:
+              default:
+                key:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      bindings:
+        event-in:
+          group: CustomerCenter
+          destination: onlinebookstore
+          contentType: application/json
+        event-out:
+          destination: onlinebookstore
+          contentType: application/json
