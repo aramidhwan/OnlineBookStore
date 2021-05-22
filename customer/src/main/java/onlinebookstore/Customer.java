@@ -13,8 +13,8 @@ public class Customer {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long customerId;
     private String name;
-    private String grade;
-    private Integer mileage;
+    private String grade = "SILVER";  // 신규 고객 등록 시 Defalut 등급은 SILVER로 설정됨
+    private Integer mileage = 0;
     private String email;
 
     @PostPersist
