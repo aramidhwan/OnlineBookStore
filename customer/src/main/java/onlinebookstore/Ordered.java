@@ -3,7 +3,7 @@ package onlinebookstore;
 public class Ordered extends AbstractEvent {
 
     private Long orderId;
-    private Integer bookId;
+    private Long bookId;
     private Integer qty;
     private Integer price;
     private Integer paymentId;
