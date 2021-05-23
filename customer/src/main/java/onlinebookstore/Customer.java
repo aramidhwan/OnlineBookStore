@@ -24,18 +24,26 @@ public class Customer {
         custermerRegistered.publishAfterCommit();
 
 
-        CustomerModified customerModified = new CustomerModified();
-        BeanUtils.copyProperties(this, customerModified);
-        customerModified.publishAfterCommit();
+        // CustomerModified customerModified = new CustomerModified();
+        // BeanUtils.copyProperties(this, customerModified);
+        // customerModified.publishAfterCommit();
 
 
-        MileageAndGradeUpdated mileageAndGradeUpdated = new MileageAndGradeUpdated();
-        BeanUtils.copyProperties(this, mileageAndGradeUpdated);
-        mileageAndGradeUpdated.publishAfterCommit();
+
 
 
     }
 
+    @PostUpdate
+    public void onPostUpdate(){
+        CustomerModified customerModified = new CustomerModified();
+        BeanUtils.copyProperties(this, customerModified);
+        customerModified.publishAfterCommit();
+
+        MileageAndGradeUpdated mileageAndGradeUpdated = new MileageAndGradeUpdated();
+        BeanUtils.copyProperties(this, mileageAndGradeUpdated);
+        mileageAndGradeUpdated.publishAfterCommit();
+    }
 
     public Long getCustomerId() {
         return customerId;
@@ -72,8 +80,5 @@ public class Customer {
     public void setEmail(String email) {
         this.email = email;
     }
-
-
-
 
 }
