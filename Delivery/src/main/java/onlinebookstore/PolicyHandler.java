@@ -39,7 +39,7 @@ public class PolicyHandler{
         
         Delivery delivery = optDelivery.get();
         
-        delivery.setStatus("Delivery cancelled");
+        delivery.setStatus("Delivery cancel");
         delivery.setDeliverystatus(ordercancelled.getStatus());        
         
         deliveryRepository.save(delivery);
