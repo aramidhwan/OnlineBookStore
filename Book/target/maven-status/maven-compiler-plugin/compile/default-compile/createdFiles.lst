@@ -1,0 +1,12 @@
+onlinebookstore\AbstractEvent$1.class
+onlinebookstore\PolicyHandler.class
+onlinebookstore\OrderCancelled.class
+onlinebookstore\config\kafka\KafkaProcessor.class
+onlinebookstore\AbstractEvent.class
+onlinebookstore\Book.class
+onlinebookstore\StockDecreased.class
+onlinebookstore\BookRegistred.class
+onlinebookstore\StockIncreased.class
+onlinebookstore\BookController.class
+onlinebookstore\BookApplication.class
+onlinebookstore\BookRepository.class
