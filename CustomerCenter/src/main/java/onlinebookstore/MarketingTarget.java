@@ -1,11 +1,10 @@
 package onlinebookstore;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.*;  
 
 @Entity
-@Table(name="Customer_table")
-public class Customer {
+@Table(name="MarketingTarget_table")
+public class MarketingTarget {
 
         @Id
         private Long customerId;

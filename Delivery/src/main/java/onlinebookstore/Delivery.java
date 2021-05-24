@@ -18,23 +18,43 @@ public class Delivery {
 
     @PostPersist
     public void onPostPersist(){
-        DeliveryStarted deliveryStarted = new DeliveryStarted();
-        BeanUtils.copyProperties(this, deliveryStarted);
-        deliveryStarted.setStatus("Delivery Start");
-        deliveryStarted.publishAfterCommit();
+        // DeliveryStarted deliveryStarted = new DeliveryStarted();
+        // BeanUtils.copyProperties(this, deliveryStarted);
+        // deliveryStarted.setOrderid(this.orderid);
+        // System.out.println("Orderid : " + deliveryStarted.getOrderid());
+        // deliveryStarted.setDeliveryid((long) (Math.random()%100));
+        // System.out.println("Deliveryid : " + deliveryStarted.getDeliveryid());                
+        // deliveryStarted.setDeliverystatus("Delivery Start");
+        // deliveryStarted.publishAfterCommit();
 
-
+        if (this.deliverystatus == "Order-Delivery") {    
+            DeliveryStarted deliveryStarted = new DeliveryStarted();
+            BeanUtils.copyProperties(this, deliveryStarted);
+            deliveryStarted.setOrderid(this.orderid);
+            System.out.println("Orderid : " + deliveryStarted.getOrderid());
+            deliveryStarted.setDeliveryid((long) (Math.random()%100));
+            System.out.println("Deliveryid : " + deliveryStarted.getDeliveryid());                
+            deliveryStarted.setDeliverystatus("Delivery Start");
+            deliveryStarted.publishAfterCommit();
+        }
+        // else if (this.deliverystatus == "Order Cancel-Delivery") {
+        else{
+            DeliveryCancelled deliveryCancelled = new DeliveryCancelled();
+            BeanUtils.copyProperties(this, deliveryCancelled);
+            deliveryCancelled.setOrderid(this.orderid);        
+            deliveryCancelled.setDeliverystatus("Delivery Cancel");
+            deliveryCancelled.publishAfterCommit();
+        }
     }
 
-    @PrePersist
-    public void onPrePersist(){
-        DeliveryCancelled deliveryCancelled = new DeliveryCancelled();
-        BeanUtils.copyProperties(this, deliveryCancelled);
-        deliveryStarted.setStatus("Delivery Cancel");
-        deliveryCancelled.publishAfterCommit();
-
-
-    }
+    // @PrePersist
+    // public void onPrePersist(){
+    //     DeliveryCancelled deliveryCancelled = new DeliveryCancelled();
+    //     BeanUtils.copyProperties(this, deliveryCancelled);
+    //     deliveryCancelled.setOrderid(this.orderid);        
+    //     deliveryCancelled.setDeliverystatus("Delivery Cancel");
+    //     deliveryCancelled.publishAfterCommit();
+    // }
 
 
     public Long getDeliveryId() {

@@ -12,7 +12,7 @@ public class CustomerModified extends AbstractEvent {
         return customerId;
     }
 
-    public void setId(Long customerId) {
+    public void setCustomerId(Long customerId) {
         this.customerId = customerId;
     }
     public String getName() {

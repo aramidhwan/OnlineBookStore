@@ -14,9 +14,9 @@ public class PolicyHandler{
     public void wheneverDeliveryStarted_UpdateState(@Payload DeliveryStarted deliveryStarted){
         if(!deliveryStarted.validate()) return;
 
-        System.out.println("** SUB :: DeliveryStarted-UpdateState deliveryId="+ deliveryStarted.getDeliveryId() + ", orderId=" + deliveryStarted.getOrderId());
+        System.out.println("** SUB :: DeliveryStarted-UpdateState deliveryId="+ deliveryStarted.getDeliveryid() + ", orderId=" + deliveryStarted.getOrderid());
 
-        Order order = orderRepository.findById(deliveryStarted.getOrderId()).get();
+        Order order = orderRepository.findById(deliveryStarted.getOrderid()).get();
         order.setStatus(deliveryStarted.getDeliverystatus());
         orderRepository.save(order);
             
