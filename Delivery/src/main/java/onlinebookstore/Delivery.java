@@ -26,11 +26,11 @@ public class Delivery {
 
     }
 
-    @PrePersist
-    public void onPrePersist(){
+    @PostPersist
+    public void onPostPersist(){
         DeliveryCancelled deliveryCancelled = new DeliveryCancelled();
         BeanUtils.copyProperties(this, deliveryCancelled);
-        deliveryStarted.setStatus("Delivery Cancel");
+        deliveryCancelled.setStatus("Delivery Cancel");
         deliveryCancelled.publishAfterCommit();
 
 
