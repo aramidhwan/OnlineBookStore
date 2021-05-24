@@ -19,11 +19,10 @@ public class PolicyHandler{
 
         System.out.println("\n\n##### listener Delivery : " + ordered.toJson() + "\n\n");
 
-        // Sample Logic modify- 2021.05.19 //
         Delivery delivery = new Delivery();
         
         delivery.setOrderId(ordered.getOrderid());
-        delivery.setDeliverystatus(ordered.getStatus());         
+        delivery.setDeliverystatus("Order-Delivery");         
         
         deliveryRepository.save(delivery);
             
@@ -35,12 +34,10 @@ public class PolicyHandler{
 
         System.out.println("\n\n##### listener CancelDelivery : " + orderCancelled.toJson() + "\n\n");
         
-        Optional<Delivery> optDelivery = deliveryRepository.findById(orderCancelled.getOrderid());
+        Delivery delivery = new Delivery();
         
-        Delivery delivery = optDelivery.get();
-        
-        delivery.setStatus("Delivery cancel");
-        delivery.setDeliverystatus(ordercancelled.getStatus());        
+        delivery.setOrderid(orderCancelled.getOrderid());
+        delivery.setDeliverystatus("Order Cancel-Delivery");        
         
         deliveryRepository.save(delivery);
             
