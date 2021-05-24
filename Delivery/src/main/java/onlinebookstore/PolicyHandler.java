@@ -34,12 +34,12 @@ public class PolicyHandler{
         if(!orderCancelled.validate()) return;
 
         System.out.println("\n\n##### listener CancelDelivery : " + orderCancelled.toJson() + "\n\n");
-
-        // Sample Logic modify- 2021.05.19 //
-        Delivery delivery = new Delivery();
         
-        // 주문 취소시 주문id set, status는??
-        delivery.setOrderId(ordercancelled.getOrderid());
+        Optional<Delivery> optDelivery = deliveryRepository.findById(orderCancelled.getOrderid());
+        
+        Delivery delivery = optDelivery.get();
+        
+        delivery.setStatus("Delivery cancelled");
         delivery.setDeliverystatus(ordercancelled.getStatus());        
         
         deliveryRepository.save(delivery);
