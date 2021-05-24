@@ -6,14 +6,18 @@ spring:
   profiles: default
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dschema?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
-    username: shshin
-    password: shin22  
+    url: jdbc:mysql://localhost:3306/delivery?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    username: deliveryAdmin
+    password: 1234
   jpa:
     properties:
       hibernate:
         show_sql: true
         format_sql: true
+        dialect: org.hibernate.dialect.MySQL57Dialect
+    hibernate:
+      ddl-auto: update
+      generate-ddl: true
   cloud:
     stream:
       kafka:

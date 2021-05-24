@@ -6,7 +6,7 @@ spring:
   profiles: default
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/customerdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/customerdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: customerUser
     password: 1234
   jpa:
@@ -15,9 +15,9 @@ spring:
         show_sql: true
         format_sql: true
         dialect: org.hibernate.dialect.MySQL57Dialect
-#    hibernate:
-#      ddl-auto: create
-#      generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      generate-ddl: true
   cloud:
     stream:
       kafka:

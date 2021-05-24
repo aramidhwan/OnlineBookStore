@@ -25,7 +25,7 @@ public class MarketingTargetViewHandler {
             // view 객체 생성
             MarketingTarget customer = new MarketingTarget();
             // view 객체에 이벤트의 Value 를 set 함
-            customer.setCustomerId(custermerRegistered.getId());
+            customer.setCustomerId(custermerRegistered.getCustomerId());
             customer.setEmail(custermerRegistered.getEmail());
             // view 레파지 토리에 save
             marketingTargetRepository.save(customer);
@@ -41,7 +41,7 @@ public class MarketingTargetViewHandler {
         try {
             if (!customerModified.validate()) return;
                 // view 객체 조회
-            Optional<MarketingTarget> optional = marketingTargetRepository.findByCustomerId(customerModified.getId());
+            Optional<MarketingTarget> optional = marketingTargetRepository.findByCustomerId(customerModified.getCustomerId());
             if( optional.isPresent()) {
             	MarketingTarget marketingTarget = optional.get();
                 // view 객체에 이벤트의 eventDirectValue 를 set 함

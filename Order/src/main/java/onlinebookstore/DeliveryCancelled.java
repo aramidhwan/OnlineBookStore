@@ -1,6 +1,8 @@
 
 package onlinebookstore;
 
+import java.util.Date;
+
 public class DeliveryCancelled extends AbstractEvent {
 
     private Long deliveryid;
