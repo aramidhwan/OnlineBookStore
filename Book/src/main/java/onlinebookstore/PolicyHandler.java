@@ -22,6 +22,7 @@ public class PolicyHandler{
             if(orderCancelled.validate()){
                 Optional<Book> bookOptional = bookRepository.findByBookId(Long.valueOf(orderCancelled.getBookId()));
                 Book book = bookOptional.get();
+                book.setStockBeforeUpdate(book.getStock());
                 book.setStock(book.getStock() + orderCancelled.getQty());
 
                 bookRepository.save(book);
