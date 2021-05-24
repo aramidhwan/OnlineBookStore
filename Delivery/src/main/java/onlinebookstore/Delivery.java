@@ -26,8 +26,8 @@ public class Delivery {
 
     }
 
-    @PostPersist
-    public void onPostPersist(){
+    @PrePersist
+    public void onPrePersist(){
         DeliveryCancelled deliveryCancelled = new DeliveryCancelled();
         BeanUtils.copyProperties(this, deliveryCancelled);
         deliveryCancelled.setStatus("Delivery Cancel");
