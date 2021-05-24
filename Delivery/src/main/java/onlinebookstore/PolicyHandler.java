@@ -21,7 +21,7 @@ public class PolicyHandler{
 
         Delivery delivery = new Delivery();
         
-        delivery.setOrderid(ordered.getOrderid());
+        delivery.setOrderid(ordered.getOrderId());
         delivery.setDeliverystatus("Order-Delivery");         
         
         deliveryRepository.save(delivery);
