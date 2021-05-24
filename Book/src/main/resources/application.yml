@@ -39,7 +39,6 @@ spring:
         event-out:
           destination: onlinebookstore
           contentType: application/json
-
 logging:
   level:
     org.hibernate.type: trace
