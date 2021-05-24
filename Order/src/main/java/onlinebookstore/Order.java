@@ -9,7 +9,7 @@ import java.util.Date;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long orderId;
     private Long bookId;
     private Integer qty;
@@ -61,18 +61,20 @@ public class Order {
 
     @PreUpdate
     public void onPreUpdate(){
-        System.out.println("** PUB :: StatusChanged : status changed to " + this.status.toString());
-        StatusChanged statusChanged = new StatusChanged();
-        BeanUtils.copyProperties(this, statusChanged);
-        statusChanged.publishAfterCommit();
-    }
-
-    @PreRemove
-    public void onPreRemove(){
-        System.out.println("** PUB :: OrderCancelled : orderId" + this.orderId);
-        OrderCancelled orderCancelled = new OrderCancelled();
-        BeanUtils.copyProperties(this, orderCancelled);
-        orderCancelled.publishAfterCommit();
+        if(this.status.equals("Order Cancelled"))
+        {
+            System.out.println("** PUB :: OrderCancelled : orderId" + this.orderId);
+            OrderCancelled orderCancelled = new OrderCancelled();
+            BeanUtils.copyProperties(this, orderCancelled);
+            orderCancelled.publishAfterCommit();
+        }
+        else {
+            System.out.println("** PUB :: StatusChanged : status changed to " + this.status.toString());
+            StatusChanged statusChanged = new StatusChanged();
+            BeanUtils.copyProperties(this, statusChanged);
+            statusChanged.publishAfterCommit();
+        }
+        
     }
 
     public Long getOrderId() {
