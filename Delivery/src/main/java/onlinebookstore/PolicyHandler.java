@@ -37,8 +37,9 @@ public class PolicyHandler{
 
         System.out.println("\n\n##### listener CancelDelivery : " + orderCancelled.toJson() + "\n\n");
         
-        Optional<Delivery> optionalDelivery = deliveryRepository.findById(orderCancelled.getOrderId());
-        Delivery delivery = optionalDelivery.get();        
+        //Optional<Delivery> optionalDelivery = deliveryRepository.findByOrderid(orderCancelled.getOrderId());
+        //Delivery delivery = optionalDelivery.get();        
+        Delivery delivery = deliveryRepository.findByOrderid(orderCancelled.getOrderId());
         
         delivery.setDeliverystatus("Order Cancel-Delivery");        
     
