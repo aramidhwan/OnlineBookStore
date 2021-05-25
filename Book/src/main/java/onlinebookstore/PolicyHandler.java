@@ -15,6 +15,7 @@ public class PolicyHandler{
     @Autowired BookRepository bookRepository;
 
     @StreamListener(KafkaProcessor.INPUT)
+    @Transactional
     public void wheneverOrderCancelled_IncreaseStock(@Payload OrderCancelled orderCancelled){
         if(orderCancelled.validate()){
             System.out.println("##### listener cancelOrder IncreaseStock : " + orderCancelled.toJson());
