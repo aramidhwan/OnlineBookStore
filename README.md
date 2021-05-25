@@ -247,35 +247,30 @@ http GET localhost:8088/orders/1
 
 ## 폴리글랏 퍼시스턴스
 
-앱프런트 (app) 는 서비스 특성상 많은 사용자의 유입과 상품 정보의 다양한 콘텐츠를 저장해야 하는 특징으로 인해 RDB 보다는 Document DB / NoSQL 계열의 데이터베이스인 Mongo DB 를 사용하기로 하였다. 이를 위해 order 의 선언에는 @Entity 가 아닌 @Document 로 마킹되었으며, 별다른 작업없이 기존의 Entity Pattern 과 Repository Pattern 적용과 데이터베이스 제품의 설정 (application.yml) 만으로 MongoDB 에 부착시켰다
+Book, CustomerCenter, Customer, Delivery는 MySQL 을 이용하며, Order는 H2 DB를 File Mode로 이용한다.
 
 ```
-# Order.java
+# (Order) application.yml
 
-package fooddelivery;
+server:
+  port: 8080
+---
 
-@Document
-public class Order {
-
-    private String id; // mongo db 적용시엔 id 는 고정값으로 key가 자동 발급되는 필드기 때문에 @Id 나 @GeneratedValue 를 주지 않아도 된다.
-    private String item;
-    private Integer 수량;
-
-}
-
-
-# 주문Repository.java
-package fooddelivery;
-
-public interface 주문Repository extends JpaRepository<Order, UUID>{
-}
-
-# application.yml
-
-  data:
-    mongodb:
-      host: mongodb.default.svc.cluster.local
-    database: mongo-example
+spring:
+  profiles: default
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./orderdb
+    username: sa
+    password: 
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
 
 ```
 
