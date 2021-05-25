@@ -5,19 +5,18 @@ server:
 spring:
   profiles: default
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/orderdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
-    username: orderUser
-    password: 1234
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./orderdb
+    username: sa
+    password: 
   jpa:
     properties:
       hibernate:
         show_sql: true
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL57Dialect
+    generate-ddl: true
     hibernate:
       ddl-auto: update
-      generate-ddl: true
   cloud:
     stream:
       kafka:
