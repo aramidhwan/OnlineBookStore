@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ public class PolicyHandler{
     @Autowired BookRepository bookRepository;
 
     @StreamListener(KafkaProcessor.INPUT)
+    @Transactional
     public void wheneverOrderCancelled_IncreaseStock(@Payload OrderCancelled orderCancelled){
         if(orderCancelled.validate()){
             System.out.println("##### listener cancelOrder IncreaseStock : " + orderCancelled.toJson());

@@ -37,8 +37,11 @@ public class Delivery {
             deliveryStarted.setDeliverystatus("Delivery Start");
             deliveryStarted.publishAfterCommit();
         }
-        // else if (this.deliverystatus == "Order Cancel-Delivery") {
-        else{
+    }
+
+    @PostUpdate
+    public void onPostUpdate(){
+        if (this.deliverystatus == "Order Cancel-Delivery") {    
             DeliveryCancelled deliveryCancelled = new DeliveryCancelled();
             BeanUtils.copyProperties(this, deliveryCancelled);
             deliveryCancelled.setOrderid(this.orderid);        
@@ -46,7 +49,7 @@ public class Delivery {
             deliveryCancelled.publishAfterCommit();
         }
     }
-
+    
     // @PrePersist
     // public void onPrePersist(){
     //     DeliveryCancelled deliveryCancelled = new DeliveryCancelled();

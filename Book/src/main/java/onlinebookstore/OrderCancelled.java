@@ -2,7 +2,7 @@ package onlinebookstore;
 
 public class OrderCancelled extends AbstractEvent {
 
-    private Long id;
+    private Long orderId;
     private Long bookId;
     private Integer qty;
     private Integer price;
@@ -10,13 +10,14 @@ public class OrderCancelled extends AbstractEvent {
     private Long customerId;
     private String status;
 
-    public Long getId() {
-        return id;
+    public Long getOrderId() {
+        return orderId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
+    
     public Long getBookId() {
         return bookId;
     }
