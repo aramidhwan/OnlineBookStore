@@ -6,7 +6,7 @@ spring:
   profiles: default
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/bookdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/bookdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: bookAdmin
     password: book
   jpa:
@@ -39,7 +39,6 @@ spring:
         event-out:
           destination: onlinebookstore
           contentType: application/json
-
 logging:
   level:
     org.hibernate.type: trace

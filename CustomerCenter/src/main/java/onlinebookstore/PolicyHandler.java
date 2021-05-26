@@ -30,7 +30,7 @@ public class PolicyHandler{
 			@Override
 			public void accept(MarketingTarget marketingTarget) {
 				System.out.println("#######################################################################");
-	            System.out.println("\n##### Send SNS to Customer("+ marketingTarget.getEmail() +") that the new book [" + bookRegistred.getTitle() + "] is arrived.");
+	            System.out.println("##### Send SNS to Customer("+ marketingTarget.getEmail() +") that the new book [" + bookRegistred.getTitle() + "] is arrived.");
 	            System.out.println("#######################################################################");
 			}
         });
@@ -50,7 +50,7 @@ public class PolicyHandler{
         	if (optional.isPresent()) {
         		MarketingTarget marketingTarget = optional.get();
 	            System.out.println("#######################################################################");
-	            System.out.println("\n##### Send SNS to Customer("+ marketingTarget.getEmail() +") that the book [" + stockIncreased.getTitle() + "] is restocked.");
+	            System.out.println("##### Send SNS to Customer("+ marketingTarget.getEmail() +") that the book [" + stockIncreased.getTitle() + "] is restocked.");
 	            System.out.println("#######################################################################");
 
         	}
