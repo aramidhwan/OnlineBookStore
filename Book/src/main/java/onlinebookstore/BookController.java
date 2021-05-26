@@ -22,13 +22,16 @@ import java.util.Optional;
          System.out.println("##### /books/chkAndModifyStock  called #####");
          boolean status = false;
          Optional<Book> bookOptional = bookRepository.findByBookId(bookId);
-         Book book = bookOptional.get();
-         // 현 재고보다 주문수량이 적거나 같은경우에만 true 회신
-         if( book.getStock() >= qty){
-             status = true;
-             book.setStockBeforeUpdate(book.getStock());
-             book.setStock(book.getStock() - qty); // 주문수량만큼 재고 감소
-             bookRepository.save(book);
+         if (bookOptional.isPresent()) {
+            Book book = bookOptional.get();
+            // 현 재고보다 주문수량이 적거나 같은경우에만 true 회신
+            if( book.getStock() >= qty){
+                status = true;
+                book.setStockBeforeUpdate(book.getStock());
+                book.setStock(book.getStock() - qty); // 주문수량만큼 재고 감소
+                bookRepository.save(book);
+         }
+         
       }
 
       return status;
