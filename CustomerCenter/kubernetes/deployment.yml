@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: CustomerCenter
+  name: customercenter
   labels:
-    app: CustomerCenter
+    app: customercenter
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: CustomerCenter
+      app: customercenter
   template:
     metadata:
       labels:
-        app: CustomerCenter
+        app: customercenter
     spec:
       containers:
-        - name: CustomerCenter
+        - name: customercenter
           image: skccteam2acr.azurecr.io/customercenter:latest
           ports:
             - containerPort: 8080
