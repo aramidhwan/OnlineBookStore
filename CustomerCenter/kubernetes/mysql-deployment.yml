@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - image: mysql:5.6
+          name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-password
+                  key: password
+            - name: MYSQL_DATABASE # 구성할 database명
+              value: book
+            - name: MYSQL_DATABASE # 구성할 database명
+              value: order
+            - name: MYSQL_DATABASE # 구성할 database명
+              value: delivery
+            - name: MYSQL_DATABASE # 구성할 database명
+              value: customer
+            - name: MYSQL_DATABASE # 구성할 database명
+              value: customercenter
+            - name: MYSQL_USER # database에 권한이 있는 user
+              value: bookAdmin
+            - name: MYSQL_USER # database에 권한이 있는 user
+              value: orderAdmin
+            - name: MYSQL_USER # database에 권한이 있는 user
+              value: deliveryAdmin
+            - name: MYSQL_USER # database에 권한이 있는 user
+              value: customerAdmin
+            - name: MYSQL_USER # database에 권한이 있는 user
+              value: customercenterAdmin
+            - name: MYSQL_ROOT_HOST # 접근 호스트
+              value: '%'  
+            - name: MYSQL_PASSWORD # database에 권한이 있는 user의 패스워드
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-password
+                  key: password
+          ports:
+            - containerPort: 3306
+              name: mysql
+#          volumeMounts:
+#            - name: mysql-persistent-storage
+#              mountPath: /var/lib/mysql
+#      volumes:
+#        - name: mysql-persistent-storage
+#          persistentVolumeClaim:
+#            claimName: mysql-volumeclaim 
