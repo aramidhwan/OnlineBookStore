@@ -4,11 +4,20 @@ server:
 
 spring:
   profiles: default
+  # datasource:
+  #   driver-class-name: com.mysql.cj.jdbc.Driver
+  #   url: jdbc:mysql://localhost:3306/onlinebookstore?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+  #   username: shshin
+  #   password: shin22
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/onlinebookstore?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
-    username: shshin
-    password: shin22
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./customercenterdb
+    username: sa
+    password: 
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
   jpa:
     properties:
       hibernate:
@@ -39,7 +48,6 @@ spring:
         event-out:
           destination: onlinebookstore
           contentType: application/json
-
 logging:
   level:
     org.hibernate.type: trace
@@ -52,7 +60,7 @@ spring:
   profiles: docker
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:./orderdb
+    url: jdbc:h2:file:./customercenterdb
     username: sa
     password: 
   h2:
@@ -88,9 +96,3 @@ spring:
         event-out:
           destination: onlinebookstore
           contentType: application/json
-logging:
-  level:
-    org.hibernate.type: trace
-    org.springframework.cloud: debug
-server:
-  port: 8083
