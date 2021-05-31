@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: Delivery
+  name: delivery
   labels:
-    app: Delivery
+    app: delivery
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: Delivery
+      app: delivery
   template:
     metadata:
       labels:
-        app: Delivery
+        app: delivery
     spec:
       containers:
-        - name: Delivery
-          image: username/Delivery:latest
+        - name: delivery
+          image: username/delivery:latest
           ports:
             - containerPort: 8080
           readinessProbe:
