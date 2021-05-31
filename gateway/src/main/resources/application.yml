@@ -47,10 +47,10 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: CustomerCenter
-          uri: http://CustomerCenter:8080
+        - id: customercenter
+          uri: http://customercenter:8080
           predicates:
-            - Path= /customers/**,/outOfStockOrders/**,/myPages/**
+            - Path= /marketingTargets/**,/outOfStockOrders/**,/myPages/**
         - id: Book
           uri: http://Book:8080
           predicates:
