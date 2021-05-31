@@ -50,6 +50,23 @@ server:
 
 spring:
   profiles: docker
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./orderdb
+    username: sa
+    password: 
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
   cloud:
     stream:
       kafka:
@@ -71,3 +88,9 @@ spring:
         event-out:
           destination: onlinebookstore
           contentType: application/json
+logging:
+  level:
+    org.hibernate.type: trace
+    org.springframework.cloud: debug
+server:
+  port: 8083
