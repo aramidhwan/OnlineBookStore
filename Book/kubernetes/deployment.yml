@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: book
-          image: username/book:latest
+          image: skccteam2acr.azurecr.io/book:latest
           ports:
             - containerPort: 8080
           readinessProbe:
