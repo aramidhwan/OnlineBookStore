@@ -5,6 +5,11 @@ server:
 spring:
   profiles: default
   datasource:
+    # driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    # url: jdbc:sqlserver://skccteam2.database.windows.net:1433;database=bookstore;user=skccteam2@skccteam2;password=skcc@123;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    # username: skccteam2
+    # password: skcc@123
+  datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/customercenterdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
     username: custcenterAdmin
@@ -59,24 +64,24 @@ server:
 spring:
   profiles: docker
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:./customercenterdb
-    username: sa
-    password: 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-      settings:
-        web-allow-others: true
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://skccteam2.database.windows.net:1433;database=bookstore;user=skccteam2@skccteam2;password=skcc@123;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: skccteam2
+    password: skcc@123
+  # datasource:
+  #   driver-class-name: org.h2.Driver
+  #   url: jdbc:h2:file:./customercenterdb
+  #   username: sa
+  #   password: 
   jpa:
     properties:
       hibernate:
         show_sql: true
         format_sql: true
-    generate-ddl: true
+        # dialect: org.hibernate.dialect.MySQL57Dialect
     hibernate:
       ddl-auto: update
+      generate-ddl: true
   cloud:
     stream:
       kafka:
