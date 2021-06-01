@@ -4,20 +4,20 @@ server:
 
 spring:
   profiles: default
-  # datasource:
-  #   driver-class-name: com.mysql.cj.jdbc.Driver
-  #   url: jdbc:mysql://localhost:3306/onlinebookstore?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
-  #   username: shshin
-  #   password: shin22
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:./customercenterdb
-    username: sa
-    password: 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/customercenterdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    username: custcenterAdmin
+    password: custcenterAdmin
+  # datasource:
+  #   driver-class-name: org.h2.Driver
+  #   url: jdbc:h2:file:./customercenterdb
+  #   username: sa
+  #   password: 
+  # h2:
+  #   console:
+  #     enabled: true
+  #     path: /h2-console
   jpa:
     properties:
       hibernate:

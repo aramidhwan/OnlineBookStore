@@ -42,7 +42,7 @@ spec:
             - name: MYSQL_USER # database에 권한이 있는 user
               value: customerAdmin
             - name: MYSQL_USER # database에 권한이 있는 user
-              value: customercenterAdmin
+              value: custcenterAdmin
             - name: MYSQL_ROOT_HOST # 접근 호스트
               value: '%'  
             - name: MYSQL_PASSWORD # database에 권한이 있는 user의 패스워드
