@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: order
-          image: skccteam2acr.azurecr.io/order:latest
+          image: skccteam2acr.azurecr.io/order:v2
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -35,3 +35,11 @@ spec:
             timeoutSeconds: 2
             periodSeconds: 5
             failureThreshold: 5
+          env:
+            - name: configmap
+              valueFrom:
+                configMapKeyRef:
+                  name: resturl
+                  key: url
+
+# kubectl create configmap resturl --from-literal=url=http://Book:8080

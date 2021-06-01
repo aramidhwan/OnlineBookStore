@@ -74,3 +74,6 @@ spring:
         event-out:
           destination: onlinebookstore
           contentType: application/json
+api:
+  url:
+    book: ${configmap}
