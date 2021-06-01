@@ -7,6 +7,16 @@ public class OutOfStocked extends AbstractEvent {
     private Long orderId;
     private Long bookId;
     private Long customerId;
+    private String status;
+    
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     private Date orderDt;
 
     public Long getOrderId() {
