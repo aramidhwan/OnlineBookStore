@@ -1,0 +1,53 @@
+=====================================
+*Customer 등록 --> CustomerCenter View에 데이터 등록
+
+*New Book 등록 --> CustomerCenter 고객Notice 발송
+
+*주문 등록 --> 
+1. 재고가능 : 
+    책재고 감소, 배송시작(주문상태변경), Customer 등급/마일리지 변경 여부, myPage로 주문상태 확인
+2. 재고부족 : 
+    OutOfStocked 발생, CustomerCenter에 OutOfOrder건 등록, myPage로 주문상태 확인
+
+*주문 취소 --> 책재고 증가, 주문건 데이터 상태(Order Cancelled",, Customer 등급/마일리지 변경 확인, Delivery 배송취소, myPage로 주문상태 확인
+
+*Book 재입고 --> OutOfStocked 주문 고객들에게 Notice 발송
+
+*고객 email 변경 --> CustomerCenter View에 데이터 변경
+
+*myPage로 주문상태 확인
+
+*고객/마케팅/배달 관리 Down 시에도 주문 가능 확인 (주문상태 Ordered임)
+------------------------------------------------------------
+
+[확인 url]
+New Book 등록
+http POST http://localhost:8088/books title="TITLE1" stock=100
+http POST http://localhost:8088/books title="TITLE2" stock=100
+http POST http://localhost:8088/books title="TITLE3" stock=100
+http GET http://localhost:8088/books
+http GET http://52.231.89.157:8080/books
+http POST http://52.231.89.157:8080/books title="TITLE1" stock=100
+http POST http://52.231.89.157:8080/books title="TITLE2" stock=100
+New Customer 등록
+http POST http://localhost:8088/customers name="CUSTOMER1" email="customer1@onlinebookstore.com"
+http POST http://localhost:8088/customers name="CUSTOMER2" email="customer2@onlinebookstore.com"
+http POST http://localhost:8088/customers name="CUSTOMER3" email="customer3@onlinebookstore.com"
+http POST http://52.231.89.157:8080/customers name="CUSTOMER1" email="customer1@onlinebookstore.com"
+http POST http://52.231.89.157:8080/customers name="CUSTOMER2" email="customer2@onlinebookstore.com"
+주문 등록
+http POST http://localhost:8088/orders bookId=7 customerId=6 qty=10
+http POST http://localhost:8088/orders bookId=3 customerId=4 qty=2000
+http POST http://52.231.89.157:8080/orders bookId=1 customerId=1 qty=8
+http POST http://52.231.89.157:8080/orders bookId=2 customerId=2 qty=200
+주문 취소
+http PATCH http://localhost:8088/orders/8 status="Order Cancelled"
+http PATCH http://52.231.89.157:8080/orders/2 status="Order Cancelled"
+Book 재입고
+http PATCH http://localhost:8088/books/reStock bookId=1  stock=1000
+http PATCH http://52.231.89.157:8080/books/reStock bookId=1  stock=1000
+고객 email 변경
+http PATCH http://localhost:8088/customers/3 email="customer33@onlinebookstore.com"
+http PATCH http://52.231.89.157:8080/customers/1 email="customer11@onlinebookstore.com"
+myPage 확인
+http GET http://localhost:8088/myPages/
