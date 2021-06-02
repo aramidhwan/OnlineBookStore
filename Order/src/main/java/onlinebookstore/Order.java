@@ -23,8 +23,16 @@ public class Order {
     public void onPrePersist(){
         //onlinebookstore.external.Book book = new onlinebookstore.external.Book();
         // Req/Res Calling
-        boolean bResult = OrderApplication.applicationContext.getBean(onlinebookstore.external.BookService.class)
+        boolean bResult = false;
+        try{
+            bResult = OrderApplication.applicationContext.getBean(onlinebookstore.external.BookService.class)
             .chkAndModifyStock(this.bookId, this.qty);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        
 
         this.price = qty * 10000;
         this.orderDt = new Date();
@@ -38,7 +46,6 @@ public class Order {
         {
             this.status="OutOfStocked";
         }
-
     }
 
     @PostPersist
@@ -74,7 +81,6 @@ public class Order {
             BeanUtils.copyProperties(this, statusChanged);
             statusChanged.publishAfterCommit();
         }
-        
     }
 
     public Long getOrderId() {
