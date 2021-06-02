@@ -16,7 +16,10 @@ spec:
     spec:
       containers:
         - name: order
-          image: skccteam2acr.azurecr.io/order:v2
+          image: skccteam2acr.azurecr.io/order:v3
+          volumeMounts:
+            - mountPath: "/data"
+              name: order-vol
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -41,5 +44,10 @@ spec:
                 configMapKeyRef:
                   name: resturl
                   key: url
+      volumes:
+      - name: order-vol
+        persistentVolumeClaim:
+          claimName: orderh2-pvc
+      
 
 # kubectl create configmap resturl --from-literal=url=http://Book:8080
