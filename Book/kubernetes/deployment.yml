@@ -35,3 +35,21 @@ spec:
             timeoutSeconds: 2
             periodSeconds: 5
             failureThreshold: 5
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+          env:
+          - name: SQLSERVER_USERNAME
+            valueFrom:
+              secretKeyRef: 
+                name: sqlserver-basic-auth
+                key: username
+          - name: SQLSERVER_PASSWORD
+            valueFrom:
+              secretKeyRef: 
+                name: sqlserver-basic-auth
+                key: password
