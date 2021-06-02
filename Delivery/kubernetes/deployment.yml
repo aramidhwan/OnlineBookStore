@@ -23,7 +23,7 @@ spec:
             httpGet:
               path: '/actuator/health'
               port: 8080
-            initialDelaySeconds: 10
+            initialDelaySeconds: 50
             timeoutSeconds: 2
             periodSeconds: 5
             failureThreshold: 10
@@ -37,10 +37,10 @@ spec:
             failureThreshold: 5
           resources:
             requests:
-              cpu: 200m
+              cpu: 1000m
               memory: 256Mi
             limits:
-              cpu: 300m
+              cpu: 1000m
               memory: 256Mi
           env:
           - name: SQLSERVER_USERNAME
