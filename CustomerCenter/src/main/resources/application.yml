@@ -66,8 +66,8 @@ spring:
   datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     url: jdbc:sqlserver://skccteam2.database.windows.net:1433;database=bookstore;user=skccteam2@skccteam2;password=skcc@123;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
-    username: ${username}
-    password: ${password}
+    username: ${SQLSERVER_USERNAME}
+    password: ${SQLSERVER_PASSWORD}
   # datasource:
   #   driver-class-name: org.h2.Driver
   #   url: jdbc:h2:file:./customercenterdb
