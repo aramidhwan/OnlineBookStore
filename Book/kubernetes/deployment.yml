@@ -31,7 +31,25 @@ spec:
             httpGet:
               path: '/actuator/health'
               port: 8080
-            initialDelaySeconds: 120
+            initialDelaySeconds: 50
             timeoutSeconds: 2
             periodSeconds: 5
             failureThreshold: 5
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 256Mi
+          env:
+          - name: SQLSERVER_USERNAME
+            valueFrom:
+              secretKeyRef: 
+                name: sqlserver-basic-auth
+                key: username
+          - name: SQLSERVER_PASSWORD
+            valueFrom:
+              secretKeyRef: 
+                name: sqlserver-basic-auth
+                key: password
