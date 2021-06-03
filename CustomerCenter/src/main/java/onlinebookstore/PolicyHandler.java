@@ -2,8 +2,10 @@ package onlinebookstore;
 
 import onlinebookstore.config.kafka.KafkaProcessor;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,18 +43,27 @@ public class PolicyHandler{
     public void wheneverStockIncreased_NoticeReStock(@Payload StockIncreased stockIncreased){
 
         if (!stockIncreased.validate()) return;
-        
+		
+		Set<Long> alreadySendedCustomerId = new HashSet<>() ;
         List<OutOfStockOrder> list = outOfStockOrderRepository.findByBookId(stockIncreased.getBookId()) ;
         
-        for (OutOfStockOrder outOfStockOrder:list) {
+		for (OutOfStockOrder outOfStockOrder:list) {
+			
+			// 이미 SNS 발송된 고객은 Skip
+			if (alreadySendedCustomerId.contains(outOfStockOrder.getCustomerId())) {
+				continue;
+			}
+
         	Optional<MarketingTarget> optional = marketingTargetRepository.findByCustomerId(outOfStockOrder.getCustomerId()) ;
-        	
+			
         	if (optional.isPresent()) {
+		
         		MarketingTarget marketingTarget = optional.get();
 	            System.out.println("#######################################################################");
 	            System.out.println("##### Send SNS to Customer("+ marketingTarget.getEmail() +") that the book [" + stockIncreased.getTitle() + "] is restocked.");
 	            System.out.println("#######################################################################");
 
+				alreadySendedCustomerId.add(marketingTarget.getCustomerId()) ;
         	}
         }
     }
