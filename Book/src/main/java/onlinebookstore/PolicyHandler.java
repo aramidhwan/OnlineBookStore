@@ -21,11 +21,26 @@ public class PolicyHandler{
         if(orderCancelled.validate()){
             System.out.println("##### listener cancelOrder IncreaseStock : " + orderCancelled.toJson());
 
-            if(orderCancelled.validate()){
-                Optional<Book> bookOptional = bookRepository.findByBookId(Long.valueOf(orderCancelled.getBookId()));
+            Optional<Book> bookOptional = bookRepository.findByBookId(orderCancelled.getBookId());
+            if ( bookOptional.isPresent()) {
                 Book book = bookOptional.get();
                 book.setStockBeforeUpdate(book.getStock());
                 book.setStock(book.getStock() + orderCancelled.getQty());
+
+                bookRepository.save(book);
+            }
+        }
+    }
+
+    @StreamListener(KafkaProcessor.INPUT)
+    @Transactional
+    public void wheneverChkAndModifyStockFallBacked_IncreaseStock(@Payload ChkAndModifyStockFallBacked chkAndModifyStockFallBacked){
+        if(chkAndModifyStockFallBacked.validate()){
+            Optional<Book> bookOptional = bookRepository.findByBookId(chkAndModifyStockFallBacked.getBookId());
+            if ( bookOptional.isPresent()) {
+                Book book = bookOptional.get();
+                book.setStockBeforeUpdate(book.getStock());
+                book.setStock(book.getStock() + chkAndModifyStockFallBacked.getQty());
 
                 bookRepository.save(book);
             }
