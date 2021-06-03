@@ -22,25 +22,18 @@ spec:
               name: order-vol
           ports:
             - containerPort: 8080
-          command:
-            - "/bin/sh"
-          args:
-            - -c
-            - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
           readinessProbe:
-            exec:
-              command:
-                - cat
-                - /tmp/healthy
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
             initialDelaySeconds: 10
             timeoutSeconds: 2
             periodSeconds: 5
             failureThreshold: 10
           livenessProbe:
-            exec:
-              command:
-                - cat
-                - /tmp/healthy
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
             initialDelaySeconds: 120
             timeoutSeconds: 2
             periodSeconds: 5
