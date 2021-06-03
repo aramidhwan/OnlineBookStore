@@ -52,11 +52,9 @@ server:
 feign:
   hystrix:
     enabled: true
-hystrix:
-  command:
-    default:
-      execution.isolation.thread.timeoutInMilliseconds: 610
-  
+api:
+  url:
+    book: http://localhost:8082
 ---
 
 spring:
@@ -105,8 +103,3 @@ api:
 feign:
   hystrix:
     enabled: true
-hystrix:
-  command:
-    default:
-      execution.isolation.thread.timeoutInMilliseconds: 610
-  
