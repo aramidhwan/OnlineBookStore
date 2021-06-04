@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: order
-          image: skccteam2acr.azurecr.io/order:v4
+          image: skccteam2acr.azurecr.io/order:latest
           volumeMounts:
             - mountPath: "/data"
               name: order-vol
@@ -46,11 +46,11 @@ spec:
                   key: url
           resources:
             requests:
-              cpu: 200m
-              memory: 256Mi
-            limits:
               cpu: 300m
-              memory: 256Mi
+              # memory: 256Mi
+            limits:
+              cpu: 500m
+              # memory: 256Mi
       volumes:
       - name: order-vol
         persistentVolumeClaim:
