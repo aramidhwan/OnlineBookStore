@@ -345,40 +345,59 @@ server:
 --> 정상적으로 주문됨을 확인하였음
 ![image](https://user-images.githubusercontent.com/20077391/121013903-5e0f7e80-c7d4-11eb-9edf-6c77e4233085.png)
 
-고객이 주문을 취소할 수 있다.
+
+2. 고객이 주문을 취소할 수 있다.
+
+--> 정상적으로 취소됨을 확인하였음
+![image](https://user-images.githubusercontent.com/20077391/121015316-d165c000-c7d5-11eb-89ae-4ef61c90adc9.png)
 
 
-주문이 성공하면 배송을 시작한다.
+3. 주문이 성공하면 배송을 시작한다.
+
 --> 정상적으로 배송 시작됨을 확인하였음
 ![image](https://user-images.githubusercontent.com/20077391/121014192-aa5abe80-c7d4-11eb-8b9f-f17e51662769.png)
 
-주문이 취소되면 배송을 취소한다.
+
+4. 주문이 취소되면 배송을 취소한다.
+
 --> 주문과 배송 시스템에서 각각 취소되었음을 확인하였음
-![image](https://user-images.githubusercontent.com/20077391/121015316-d165c000-c7d5-11eb-89ae-4ef61c90adc9.png)
 ![image](https://user-images.githubusercontent.com/20077391/121015454-f9edba00-c7d5-11eb-885b-af20cf53cd22.png)
 
-관리자가 신규도서를 등록한다.
+
+5. 관리자가 신규도서를 등록한다.
+
 --> 정상적으로 등록됨을 확인하였음
 ![image](https://user-images.githubusercontent.com/20077391/121013489-d7f33800-c7d3-11eb-8c46-3e40e5fc6be3.png)
 
-관리자가 도서 재고를 추가한다.
+
+6. 관리자가 도서 재고를 추가한다.
+
 --> 정상적으로 재고가 늘어남을 확인하였음
 ![image](https://user-images.githubusercontent.com/20077391/121015711-41744600-c7d6-11eb-96da-c11b1a800f93.png)
 
-고객은 회원가입을 한다.
+
+7. 고객은 회원가입을 한다.
+
 --> 정상적으로 등록됨을 확인하였음
 ![image](https://user-images.githubusercontent.com/20077391/121013551-eccfcb80-c7d3-11eb-99e9-5946cf5cf5bd.png)
 
-도서 주문 실적에 따라 고객의 마일리지 및 등급을 관리한다.
+
+8. 도서 주문 실적에 따라 고객의 마일리지 및 등급을 관리한다.
+
 --> 주문했던 고객의 등급과 마일리지가 올라간 것을 알 수 있다.
 ![image](https://user-images.githubusercontent.com/20077391/121014460-f7d72b80-c7d4-11eb-8b35-6e3a8ffa08bc.png)
 
-신규 도서가 등록되면 기존 고객에게 알려준다.
+
+9. 신규 도서가 등록되면 기존 고객에게 알려준다.
+
 --> SNS가 발송됨을 확인하였음
 ![image](https://user-images.githubusercontent.com/20077391/121014951-7633cd80-c7d5-11eb-94f1-cf704f4a9fc1.png)
 
-도서가 재입고되면 재고부족으로 못 구매한 고객에게 알려준다.
+
+10. 도서가 재입고되면 재고부족으로 못 구매한 고객에게 알려준다.
+--> SNS가 발송됨을 확인하였음
 ![image](https://user-images.githubusercontent.com/20077391/121015814-6072d800-c7d6-11eb-9786-c02c5a48189b.png)
+
 
 # CQRS
 Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다.
