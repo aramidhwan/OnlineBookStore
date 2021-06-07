@@ -250,11 +250,18 @@ http GET localhost:8088/orders/1
 Book, CustomerCenter, Customer, Delivery는 MySQL 을 이용하며, Order는 H2 DB를 File Mode로 이용한다.
 
 ```
-# (Order) application.yml
+# (Book) application.yml
 
-server:
-  port: 8080
----
+spring:
+  profiles: default
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/bookdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: bookAdmin
+    password: book
+...
+
+# (Order) application.yml
 
 spring:
   profiles: default
@@ -263,15 +270,6 @@ spring:
     url: jdbc:h2:file:./orderdb
     username: sa
     password: 
-  jpa:
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-    generate-ddl: true
-    hibernate:
-      ddl-auto: update
-
 ```
 
 ## 동기식 호출 과 Fallback 처리
