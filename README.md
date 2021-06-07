@@ -46,9 +46,6 @@
 1. 장애격리
     1. 고객/마케팅/배달 관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다  Async (event-driven), Eventual Consistency
     2. 고객시스템이 과중되면 사용자를 잠시동안 받지 않고 재접속하도록 유도한다  Circuit breaker, fallback
-1. 성능
-    1. 고객이 마이페이지 통해 주문상태를 확인할 수 있어야 한다  CQRS
-    2. 신규 도서가 등록되면 가입회원들에게 알림을 줄 수 있어야 한다  Event driven
 
 
 # 분석/설계
@@ -246,7 +243,7 @@ http GET localhost:8088/orders/1
 
 ```
 
-# GateWay 적용
+## GateWay 적용
 API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다.
 다음과 같이 GateWay를 적용하였다.
 
@@ -338,7 +335,7 @@ server:
 
 ```
 
-# 기능적 요구사항 검증
+## 기능적 요구사항 검증
 
 1. 고객이 도서를 주문한다.
 
@@ -400,7 +397,30 @@ server:
 ![image](https://user-images.githubusercontent.com/20077391/121015814-6072d800-c7d6-11eb-9786-c02c5a48189b.png)
 
 
-# CQRS
+## 비기능적 요구사항 검증
+
+1. 트랜잭션
+
+주문 시 재고가 부족할 경우 주문이 되지 않는다. (Sync 호출)
+
+--> 재고보다 많은 양(qty)을 주문하였을 경우 OutOfStock으로 처리한다.
+![image](https://user-images.githubusercontent.com/20077391/121017541-59e56000-c7d8-11eb-8dc0-54e38c3f5872.png)
+
+
+2. 장애격리
+고객/고객센터/배달 관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다 Async (event-driven), Eventual Consistency
+
+--> 고객/고객센터/배달 마이크로서비스를 모두 내리고 주문을 생성했을때, 정상적으로 주문됨을 확인함
+![image](https://user-images.githubusercontent.com/20077391/121018620-9a91a900-c7d9-11eb-89fc-bdd37313434e.png)
+![image](https://user-images.githubusercontent.com/20077391/121018208-25be6f00-c7d9-11eb-8b1a-106718b53453.png)
+
+
+3. 고객시스템이 과중되면 사용자를 잠시동안 받지 않고 재접속하도록 유도한다 Circuit breaker, fallback
+
+--> 뒤의 Hystrix를 통한 Circuit Break 구현에서 검증하도록 한다.
+
+
+## CQRS
 Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다.
 본 프로젝트에서 View 역할은 CustomerCenter 서비스가 수행한다.
 CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스의 접근없이 CustomerCenter의 마이페이지를 통해 조회할 수 있도록 구현하였다.
@@ -418,7 +438,6 @@ CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스�
 위와 같이 주문을 하게되면 Order -> Book -> Order -> Delivery 로 주문이 Assigend 되고
 
 주문 취소가 되면 Status가 "Delivery Cancelled"로 Update 되는 것을 볼 수 있다.
-
 
 
 ## 폴리글랏 퍼시스턴스
