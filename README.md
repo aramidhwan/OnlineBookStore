@@ -225,113 +225,19 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(collectionResourceRel="orders", path="orders")
 public interface OrderRepository extends PagingAndSortingRepository<Order, Long>{
-
-
 }
 
 ```
 - 적용 후 REST API 의 테스트
 ```
 # Order 서비스의 주문처리
-http POST localhost:8088/orders bookId=3 qty=1 customerId=3
+http POST localhost:8088/orders bookId=1 qty=1 customerId=1
 
-# Book 서비스의 재고 등록처리
-http POST localhost:8088/books title="Book Title" stock=30
+# Book 서비스의 재입고
+http PATCH http://localhost:8088/books/reStock bookId=1  stock=1000
 
 # 주문 상태 확인
-http GET localhost:8088/orders/1
-
-```
-
-## GateWay 적용
-API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다.
-다음과 같이 GateWay를 적용하였다.
-
-``` (gateway) application.yaml
-
-server:
-  port: 8088
-
----
-
-spring:
-  profiles: default
-  cloud:
-    gateway:
-      routes:
-        - id: CustomerCenter
-          uri: http://localhost:8081
-          predicates:
-            - Path= /myPages/**
-        - id: Book
-          uri: http://localhost:8082
-          predicates:
-            - Path=/books/** 
-        - id: Order
-          uri: http://localhost:8083
-          predicates:
-            - Path=/orders/** 
-        - id: Delivery
-          uri: http://localhost:8084
-          predicates:
-            - Path=/deliveries/** 
-        - id: customer
-          uri: http://localhost:8085
-          predicates:
-            - Path=/customers/** 
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "*"
-            allowedMethods:
-              - "*"
-            allowedHeaders:
-              - "*"
-            allowCredentials: true
-
-
----
-
-spring:
-  profiles: docker
-  cloud:
-    gateway:
-      routes:
-        - id: customercenter
-          uri: http://customercenter:8080
-          predicates:
-            - Path= /marketingTargets/**,/outOfStockOrders/**,/myPages/**
-        - id: Book
-          uri: http://Book:8080
-          predicates:
-            - Path=/books/** 
-        - id: Order
-          uri: http://Order:8080
-          predicates:
-            - Path=/orders/** 
-        - id: Delivery
-          uri: http://Delivery:8080
-          predicates:
-            - Path=/deliveries/** 
-        - id: customer
-          uri: http://customer:8080
-          predicates:
-            - Path=/customers/** 
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "*"
-            allowedMethods:
-              - "*"
-            allowedHeaders:
-              - "*"
-            allowCredentials: true
-
-server:
-  port: 8080
-
+http GET localhost:8088/myPages/
 
 ```
 
@@ -419,6 +325,9 @@ server:
 
 --> 뒤의 Hystrix를 통한 Circuit Break 구현에서 검증하도록 한다.
 
+## Saga
+분석/설계 및 구현을 통해 이벤트를 Publish/Subscribe 하도록 구현하였다.
+![image](https://user-images.githubusercontent.com/20077391/121020310-353eb780-c7db-11eb-9e6e-2a0b0f9917e2.png)
 
 ## CQRS
 Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다.
@@ -438,6 +347,91 @@ CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스�
 위와 같이 주문을 하게되면 Order -> Book -> Order -> Delivery 로 주문이 Assigend 되고
 
 주문 취소가 되면 Status가 "Delivery Cancelled"로 Update 되는 것을 볼 수 있다.
+
+## GateWay 
+API GateWay를 통하여 마이크로 서비스들의 진입점을 통일할 수 있다.
+다음과 같이 GateWay를 적용하였다.
+
+``` (gateway) application.yaml
+
+server:
+  port: 8088
+---
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: CustomerCenter
+          uri: http://localhost:8081
+          predicates:
+            - Path= /myPages/**
+        - id: Book
+          uri: http://localhost:8082
+          predicates:
+            - Path=/books/** 
+        - id: Order
+          uri: http://localhost:8083
+          predicates:
+            - Path=/orders/** 
+        - id: Delivery
+          uri: http://localhost:8084
+          predicates:
+            - Path=/deliveries/** 
+        - id: customer
+          uri: http://localhost:8085
+          predicates:
+            - Path=/customers/** 
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+---
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: customercenter
+          uri: http://customercenter:8080
+          predicates:
+            - Path= /marketingTargets/**,/outOfStockOrders/**,/myPages/**
+        - id: Book
+          uri: http://Book:8080
+          predicates:
+            - Path=/books/** 
+        - id: Order
+          uri: http://Order:8080
+          predicates:
+            - Path=/orders/** 
+        - id: Delivery
+          uri: http://Delivery:8080
+          predicates:
+            - Path=/deliveries/** 
+        - id: customer
+          uri: http://customer:8080
+          predicates:
+            - Path=/customers/** 
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080
+```
 
 
 ## 폴리글랏 퍼시스턴스
