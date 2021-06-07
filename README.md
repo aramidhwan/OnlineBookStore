@@ -797,7 +797,8 @@ kubectl get all -n tutorial
 # (Book) BookController.java (Entity)
 ```
 
-![image](https://user-images.githubusercontent.com/20077391/120970469-71a3f080-c7a6-11eb-99fa-7f4f4a93356d.png)
+![image](https://user-images.githubusercontent.com/20077391/120971537-b54b2a00-c7a7-11eb-9595-8fa8cb444be5.png)
+
 
 
 
