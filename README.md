@@ -645,81 +645,90 @@ docker push skccteam2acr.azurecr.io/delivery:latest
 
 - yml파일 이용한 deploy
 ```
-cd ..
-cd SirenOrder
-az acr build --registry skteam01 --image skteam01.azurecr.io/sirenorder:v1 .
-```
-![증빙7](https://user-images.githubusercontent.com/77368578/107920373-35a70e80-6fb0-11eb-8024-a6fc42fea93f.png)
+kubectl apply -f deployment.yml
 
-```
-kubectl expose deploy shop --type=ClusterIP --port=8080 -n tutorial
-```
-
-- winterone/SirenOrder/kubernetes/deployment.yml 파일 
-```yml
+- OnlineBookStore/Order/kubernetes/deployment.yml 파일 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sirenorder
-  namespace: tutorial
+  name: order
   labels:
-    app: sirenorder
+    app: order
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sirenorder
+      app: order
   template:
     metadata:
       labels:
-        app: sirenorder
+        app: order
     spec:
       containers:
-        - name: sirenorder
-          image: hispres.azurecr.io/sirenorder:v4
+        - name: order
+          image: skccteam2acr.azurecr.io/order:latest
+          volumeMounts:
+            - mountPath: "/data"
+              name: order-vol
           ports:
             - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
           env:
-            - name: configurl
+            - name: configmap
               valueFrom:
                 configMapKeyRef:
-                  name: apiurl
+                  name: resturl
                   key: url
+          resources:
+            requests:
+              cpu: 300m
+              # memory: 256Mi
+            limits:
+              cpu: 500m
+              # memory: 256Mi
+      volumes:
+      - name: order-vol
+        persistentVolumeClaim:
+          claimName: orderh2-pvc
+
 ```	  
 - deploy 완료
 
-![전체 MSA](https://user-images.githubusercontent.com/77368578/108006011-992b4d80-703d-11eb-8df9-a2cea19aa693.png)
+![image](https://user-images.githubusercontent.com/20077391/120963003-cc841a80-c79b-11eb-81ff-015a63cdf7ec.png)
+
 
 # ConfigMap 
 - 시스템별로 변경 가능성이 있는 설정들을 ConfigMap을 사용하여 관리
 
-- application.yml 파일에 ${configurl} 설정
+- application.yml 파일에 ${configmap} 설정
 
 ```yaml
-      feign:
-        hystrix:
-          enabled: true
-      hystrix:
-        command:
-          default:
-            execution.isolation.thread.timeoutInMilliseconds: 610
-      api:
-        url:
-          Payment: ${configurl}
+
+![image](https://user-images.githubusercontent.com/20077391/120963090-f0dff700-c79b-11eb-88b4-247efe73a301.png)
 
 ```
 
-- ConfigMap 사용(/SirenOrder/src/main/java/winterschoolone/external/PaymentService.java) 
+- ConfigMap 사용(/Order/src/main/java/onlinebookstore/external/BookService.java) 
 
 ```java
 
-      @FeignClient(name="Payment", url="${api.url.Payment}")
-      public interface PaymentService {
-      
-	      @RequestMapping(method= RequestMethod.POST, path="/payments")
-              public void pay(@RequestBody Payment payment);
-	      
-      }
+![image](https://user-images.githubusercontent.com/20077391/120963151-05bc8a80-c79c-11eb-81f1-a076d4d46c7f.png)
+
 ```
 
 - Deployment.yml 에 ConfigMap 적용
@@ -729,10 +738,12 @@ spec:
 - ConfigMap 생성
 
 ```
-kubectl create configmap apiurl --from-literal=url=http://10.0.92.205:8080 -n tutorial
+kubectl create configmap resturl --from-literal=url=http://Book:8080
+
 ```
 
-   ![image](https://user-images.githubusercontent.com/74236548/107968395-aa4e6d00-6ff1-11eb-9112-2f1d77a561ad.png)
+   ![image](https://user-images.githubusercontent.com/20077391/120963390-76fc3d80-c79c-11eb-98d5-cd14dccf8ed1.png)
+
 
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
