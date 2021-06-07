@@ -789,17 +789,17 @@ kubectl get all -n tutorial
                     추가로, 테스트를 위해 1번만 timeout이 발생해도 CB가 발생하도록 설정
 ```
 # application.yml
-![image](https://user-images.githubusercontent.com/20077391/120970089-ed516d80-c7a5-11eb-8abb-d57cdbf77065.png)
-
 ```
+![image](https://user-images.githubusercontent.com/20077391/120970089-ed516d80-c7a5-11eb-8abb-d57cdbf77065.png)
 
 - 피호출 서비스(책재고:Book)에서 테스트를 위해 bookId가 2인 주문건에 대해 sleep 처리
 ```
 # (Book) BookController.java (Entity)
+```
 
 ![image](https://user-images.githubusercontent.com/20077391/120970469-71a3f080-c7a6-11eb-99fa-7f4f4a93356d.png)
 
-```
+
 
 * 서킷 브레이커 동작 확인:
 
