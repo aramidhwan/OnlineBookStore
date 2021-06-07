@@ -652,6 +652,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: order
+  namespace: onlinebookstore
   labels:
     app: order
 spec:
