@@ -823,7 +823,7 @@ bookId가 1번 인 경우 정상적으로 주문 처리 완료
 ```
 ![image](https://user-images.githubusercontent.com/20077391/120970620-a152f880-c7a6-11eb-843a-855d85678638.png)
 
-bookId가 2번 인 경우 CB에 의한 timeout 발생 확인 (Order건은 OutOfOrdered 처리됨)
+bookId가 2번 인 경우 CB에 의한 timeout 발생 확인 (Order건은 OutOfStocked 처리됨)
 ```
 # http POST http://52.141.32.129:8080/orders bookId=2 customerId=4 qty=1
 ```
@@ -848,9 +848,16 @@ time 아웃이 연달아 2번 발생한 경우 CB가 OPEN되어 Book 호출이 �
 
 - 주문서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 테스트를 위해 CPU 사용량이 50프로를 넘어서면 replica 를 3개까지 늘려준다:
 ```
-Order의 hpa.yml
+hpa.yml
 ```
 ![image](https://user-images.githubusercontent.com/20077391/120973949-8aaea080-c7aa-11eb-80ce-eccb3c8cbc0d.png)
+
+- deployment.yml에 resource 관련 설정을 추가해 준다.
+```
+deployment.yml
+```
+![image](https://user-images.githubusercontent.com/20077391/121101100-25a08c80-c836-11eb-81f1-a7df0f0dcaeb.png)
+
 
 - 100명이 60초 동안 주문을 넣어준다.
 ```
