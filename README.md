@@ -340,7 +340,8 @@ server:
 
 # 기능적 요구사항 검증
 
-고객이 도서를 주문한다.
+1. 고객이 도서를 주문한다.
+
 --> 정상적으로 주문됨을 확인하였음
 ![image](https://user-images.githubusercontent.com/20077391/121013903-5e0f7e80-c7d4-11eb-9edf-6c77e4233085.png)
 
