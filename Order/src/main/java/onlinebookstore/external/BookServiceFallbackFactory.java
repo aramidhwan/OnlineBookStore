@@ -19,6 +19,7 @@ public class BookServiceFallbackFactory implements FallbackFactory<BookService> 
                     chkAndModifyStockFallBacked.setBookId(bookId);
                     chkAndModifyStockFallBacked.setQty(qty);
                     chkAndModifyStockFallBacked.publish();
+                    System.out.println("####### Hystrix timeout occured ########");
                     System.out.println("** PUB :: ChkAndModifyStockFallBacked (by HystrixTimeoutException)");
 
                 // Hystrix circuit OPEN 일 경우 Book 재고 회복 불필요
