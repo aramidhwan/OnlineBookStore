@@ -395,6 +395,7 @@ server:
 
 
 10. 도서가 재입고되면 재고부족으로 못 구매한 고객에게 알려준다.
+
 --> SNS가 발송됨을 확인하였음
 ![image](https://user-images.githubusercontent.com/20077391/121015814-6072d800-c7d6-11eb-9786-c02c5a48189b.png)
 
@@ -402,10 +403,11 @@ server:
 # CQRS
 Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다.
 본 프로젝트에서 View 역할은 CustomerCenter 서비스가 수행한다.
+CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스의 접근없이 CustomerCenter의 마이페이지를 통해 조회할 수 있도록 구현하였다.
 
 - 주문(ordered) 실행 후 myPage 화면
 
-![image](https://user-images.githubusercontent.com/20077391/120961319-91341c80-c798-11eb-8081-efec0fff119f.png)
+![image](https://user-images.githubusercontent.com/20077391/121016627-4f769680-c7d7-11eb-8f60-f9640223c1ec.png)
 
 
 - 주문취소(OrderCancelled) 후 myPage 화면
@@ -421,8 +423,10 @@ Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원�
 
 ## 폴리글랏 퍼시스턴스
 
-폴리글랏을 위해 각 마이크로서비스의 담당자들이 원하는 DBMS로 구현하였다.
-Book, CustomerCenter, Customer, Delivery는 MySQL 을 이용하며, Order는 H2 DB를 File Mode로 이용한다.
+각 마이크로서비스의 다양한 요구사항에 능동적으로 대처하고자 최적의 구현언어 및 DBMS를 선택할 수 있다.
+OnlineBookStore에서는 다음과 같이 2가지 DBMS를 적용하였다.
+- MySQL : Book, CustomerCenter, Customer, Delivery
+- H2    : Order
 
 ```
 # (Book, CustomerCenter, Customer, Delivery) application.yml
