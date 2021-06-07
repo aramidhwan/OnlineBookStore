@@ -284,7 +284,6 @@ spring:
 
 package onlinebookstore.external;
 
-//@FeignClient(name="Book", url="http://Book:8080")
 @FeignClient(name="Book", url="${api.url.book}", fallbackFactory = BookServiceFallbackFactory.class)
 public interface BookService {
 
