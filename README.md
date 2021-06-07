@@ -722,16 +722,6 @@ spec:
 ![image](https://user-images.githubusercontent.com/20077391/120963090-f0dff700-c79b-11eb-88b4-247efe73a301.png)
 
 
-- ConfigMap 사용(/Order/src/main/java/onlinebookstore/external/BookService.java) 
-
-
-![image](https://user-images.githubusercontent.com/20077391/120964977-24705080-c79f-11eb-8e5b-be9f8e6d2128.png)
-
-
-- Deployment.yml 에 ConfigMap 적용
-
-![image](https://user-images.githubusercontent.com/74236548/107925407-c2a19600-6fb7-11eb-9325-6bd2cd94455c.png)
-
 - ConfigMap 생성
 
 ```
@@ -741,6 +731,51 @@ kubectl create configmap resturl --from-literal=url=http://Book:8080
 
    ![image](https://user-images.githubusercontent.com/20077391/120963390-76fc3d80-c79c-11eb-98d5-cd14dccf8ed1.png)
 
+
+- ConfigMap 사용(/Order/src/main/java/onlinebookstore/external/BookService.java) 
+
+
+![image](https://user-images.githubusercontent.com/20077391/120964977-24705080-c79f-11eb-8e5b-be9f8e6d2128.png)
+
+
+- Deployment.yml 에 ConfigMap 적용
+
+![image](https://user-images.githubusercontent.com/20077391/120965103-58e40c80-c79f-11eb-8abd-d3a98048166e.png)
+
+
+# 오토스케일 아웃
+
+- 서킷 브레이커는 시스템을 안정되게 운영할 수 있게 해줬지만, 사용자의 요청이 급증하는 경우, 오토스케일 아웃이 필요하다.
+
+>- 단, 부하가 제대로 걸리기 위해서, recipe 서비스의 리소스를 줄여서 재배포한다.(winterone/Shop/kubernetes/deployment.yml 수정)
+
+```yaml
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
+```
+
+- 다시 expose 해준다.
+```
+kubectl expose deploy shop --type=ClusterIP --port=8080 -n tutorial
+```
+- recipe 시스템에 replica를 자동으로 늘려줄 수 있도록 HPA를 설정한다. 설정은 CPU 사용량이 15%를 넘어서면 replica를 10개까지 늘려준다.
+```
+kubectl autoscale deploy shop --min=1 --max=10 --cpu-percent=15 -n tutorial
+```
+- siege를 활용해서 워크로드를 2분간 걸어준다. (Cloud 내 siege pod에서 부하줄 것)
+```
+kubectl exec -it pod/siege -c siege -n tutorial -- /bin/bash
+siege -c100 -t120S -r10 -v --content-type "application/json" 'http://10.0.14.180:8080/shops POST {"orderId": 111, "userId": "user10", "menuId": "menu10", "qty":10}'
+```
+![autoscale(hpa) 실행 및 부하발생](https://user-images.githubusercontent.com/77368578/107917594-8405de80-6fab-11eb-830c-b15f255b2314.png)
+- 오토스케일 모니터링을 걸어 스케일 아웃이 자동으로 진행됨을 확인한다.
+```
+kubectl get all -n tutorial
+```
+![autoscale(hpa)결과](https://user-images.githubusercontent.com/77368578/107917604-8831fc00-6fab-11eb-83bb-9ba19159d00d.png)
 
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
