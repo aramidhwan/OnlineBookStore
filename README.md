@@ -286,7 +286,8 @@ spring:
 
 package onlinebookstore.external;
 
-@FeignClient(name="Book", url="http://localhost:8082")
+//@FeignClient(name="Book", url="http://Book:8080")
+@FeignClient(name="Book", url="${api.url.book}", fallbackFactory = BookServiceFallbackFactory.class)
 public interface BookService {
 
     @RequestMapping(method= RequestMethod.GET, path="/books/chkAndModifyStock")
@@ -294,31 +295,75 @@ public interface BookService {
                                         @RequestParam("qty") int qty);
 
 }
-```
 
-- 주문을 받은 직후(@PrePersist) 재고 확인을 요청하도록 처리
-```
-# Order.java (Entity)
+FallBack 
+# (Order) BookServiceFallbackFactory.java
 
-    @PrePersist
-    public void onPrePersist(){
-        //onlinebookstore.external.Book book = new onlinebookstore.external.Book();
-        // Req/Res Calling
-        boolean bResult = OrderApplication.applicationContext.getBean(onlinebookstore.external.BookService.class)
-            .chkAndModifyStock(this.bookId, this.qty);
+package onlinebookstore.external;
 
-        ...
-                
-        if(bResult)
-        {
-            this.status="Ordered";
-        }
-        else
-        {
-            this.status="OutOfStocked";
-        }
+@Component
+public class BookServiceFallbackFactory implements FallbackFactory<BookService> {
 
+    @Override
+    public BookService create(Throwable cause) { 
+        return new BookService() {
+            @Override
+            public boolean chkAndModifyStock(Long bookId, int qty) {
+                // HystrixTimeoutException 일 경우 Book 재고 회복
+                if ( cause instanceof com.netflix.hystrix.exception.HystrixTimeoutException ) {
+                    // kafka에 이벤트 발생(Book 재고 회복)
+                    ChkAndModifyStockFallBacked chkAndModifyStockFallBacked = new ChkAndModifyStockFallBacked();
+                    chkAndModifyStockFallBacked.setBookId(bookId);
+                    chkAndModifyStockFallBacked.setQty(qty);
+                    chkAndModifyStockFallBacked.publish();
+                    System.out.println("** PUB :: ChkAndModifyStockFallBacked (by HystrixTimeoutException)");
+
+                // Hystrix circuit OPEN 일 경우 Book 재고 회복 불필요
+                } else {
+                    System.out.println("####### BookServiceFallbacked kind ########");
+                    System.out.println("####### " + cause.getMessage());
+                }
+
+                return false;
+            }
+        };
     }
+}
+```
+
+- 주문을 받은 직후 재고(Book) 확인을 요청하도록 처리
+```
+# BookController.java
+
+package onlinebookstore;
+
+ @RestController
+ public class BookController {
+     @Autowired  BookRepository bookRepository;
+
+     @RequestMapping(value = "/books/chkAndModifyStock",
+             method = RequestMethod.GET,
+             produces = "application/json;charset=UTF-8")
+     public boolean chkAndModifyStock(@RequestParam("bookId") Long bookId,
+                                      @RequestParam("qty")  int qty)
+             throws Exception {
+             
+         boolean status = false;
+         Optional<Book> bookOptional = bookRepository.findByBookId(bookId);
+         if (bookOptional.isPresent()) {
+            Book book = bookOptional.get();
+            // 현 재고보다 주문수량이 적거나 같은경우에만 true 회신
+            if( book.getStock() >= qty){
+                status = true;
+                book.setStockBeforeUpdate(book.getStock());
+                book.setStock(book.getStock() - qty); // 주문수량만큼 재고 감소
+                bookRepository.save(book);
+         }
+      }
+
+      return status;
+  }
+
 ```
 
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 재고 관리 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
@@ -328,16 +373,16 @@ public interface BookService {
 # 책 재고 관리 (Book) 서비스를 잠시 내려놓음 (ctrl+c)
 
 #주문처리
-http POST localhost:8088/orders bookId=3 qty=1 customerId=3   #Fail
-http POST localhost:8088/orders bookId=5 qty=3 customerId=2   #Fail
+http POST localhost:8088/orders bookId=1 qty=10 customerId=1   #Fail
+http POST localhost:8088/orders bookId=2 qty=20 customerId=2   #Fail
 
 #재고 관리 서비스 재기동
 cd Book
 mvn spring-boot:run
 
 #주문처리
-http POST localhost:8088/orders bookId=3 qty=1 customerId=3   #Success
-http POST localhost:8088/orders bookId=5 qty=3 customerId=2   #Success
+http POST localhost:8088/orders bookId=1 qty=10 customerId=1   #Success
+http POST localhost:8088/orders bookId=2 qty=20 customerId=2   #Success
 ```
 
 - 또한 과도한 요청시에 서비스 장애가 도미노 처럼 벌어질 수 있다. (서킷브레이커, 폴백 처리는 운영단계에서 설명한다.)
