@@ -329,6 +329,7 @@ http GET localhost:8088/myPages/
 분석/설계 및 구현을 통해 이벤트를 Publish/Subscribe 하도록 구현하였다.
 ![image](https://user-images.githubusercontent.com/20077391/121020310-353eb780-c7db-11eb-9e6e-2a0b0f9917e2.png)
 
+
 ## CQRS
 Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다.
 본 프로젝트에서 View 역할은 CustomerCenter 서비스가 수행한다.
@@ -347,6 +348,7 @@ CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스�
 위와 같이 주문을 하게되면 Order -> Book -> Order -> Delivery 로 주문이 Assigend 되고
 
 주문 취소가 되면 Status가 "Delivery Cancelled"로 Update 되는 것을 볼 수 있다.
+
 
 ## GateWay 
 API GateWay를 통하여 마이크로 서비스들의 진입점을 통일할 수 있다.
@@ -464,9 +466,11 @@ spring:
     password: 
 ```
 
-## 동기식 호출 과 Fallback 처리
 
-분석단계에서의 조건 중 하나로 주문(Order)->책 재고 확인(Book) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
+## 동기식 호출(Req/Resp) 과 Fallback 처리
+
+분석단계에서의 조건 중 하나로 주문(Order)->책 재고 확인(Book) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 
+호출 프로토콜은 RestController를 FeignClient 를 이용하여 호출하도록 한다. 
 
 - 재고 확인 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
 
@@ -572,9 +576,6 @@ mvn spring-boot:run
 http POST localhost:8088/orders bookId=1 qty=10 customerId=1   #Success
 http POST localhost:8088/orders bookId=2 qty=20 customerId=2   #Success
 ```
-
-- 또한 과도한 요청시에 서비스 장애가 도미노 처럼 벌어질 수 있다. (서킷브레이커, 폴백 처리는 운영단계에서 설명한다.)
-
 
 
 
