@@ -436,7 +436,7 @@ server:
 ```
 
 
-## 폴리글랏 퍼시스턴스
+## Polyglot
 
 각 마이크로서비스의 다양한 요구사항에 능동적으로 대처하고자 최적의 구현언어 및 DBMS를 선택할 수 있다.
 OnlineBookStore에서는 다음과 같이 2가지 DBMS를 적용하였다.
@@ -747,9 +747,6 @@ spec:
       containers:
         - name: order
           image: skccteam2acr.azurecr.io/order:latest
-          volumeMounts:
-            - mountPath: "/data"
-              name: order-vol
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -781,21 +778,24 @@ spec:
             limits:
               cpu: 500m
               # memory: 256Mi
-      volumes:
-      - name: order-vol
-        persistentVolumeClaim:
-          claimName: orderh2-pvc
 ```	  
 
 - deploy 완료
 
-![image](https://user-images.githubusercontent.com/20077391/120963003-cc841a80-c79b-11eb-81ff-015a63cdf7ec.png)
+![image](https://user-images.githubusercontent.com/20077391/121022073-fc9fdd80-c7dc-11eb-9f50-962556056728.png)
 
 
 # ConfigMap 
 - 시스템별로 변경 가능성이 있는 설정들을 ConfigMap을 사용하여 관리
+- OnlineBookStore에서는 주문에서 책 재고 서비스 호출 시 "호출 주소"를 ConfigMap 처리하기로 결정
 
-- application.yml 파일에 ${configmap} 설정
+- Java 소스에 "호출 주소"를 변수(api.url.book) 처리(/Order/src/main/java/onlinebookstore/external/BookService.java) 
+
+
+![image](https://user-images.githubusercontent.com/20077391/120964977-24705080-c79f-11eb-8e5b-be9f8e6d2128.png)
+
+
+- application.yml 파일에서 api.url.book을 ConfigMap과 연결
 
 
 ![image](https://user-images.githubusercontent.com/20077391/120963090-f0dff700-c79b-11eb-88b4-247efe73a301.png)
@@ -805,28 +805,19 @@ spec:
 
 ```
 kubectl create configmap resturl --from-literal=url=http://Book:8080
-
 ```
-
-   ![image](https://user-images.githubusercontent.com/20077391/120963390-76fc3d80-c79c-11eb-98d5-cd14dccf8ed1.png)
-
-
-- ConfigMap 사용(/Order/src/main/java/onlinebookstore/external/BookService.java) 
-
-
-![image](https://user-images.githubusercontent.com/20077391/120964977-24705080-c79f-11eb-8e5b-be9f8e6d2128.png)
-
 
 - Deployment.yml 에 ConfigMap 적용
 
 ![image](https://user-images.githubusercontent.com/20077391/120965103-58e40c80-c79f-11eb-8abd-d3a98048166e.png)
 
 
-## 동기식 호출 / 서킷 브레이킹 / 장애격리
 
-* 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
+## Circuit Breaker
 
-시나리오는 주문(Order)-->재고(Book) 확인 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 주문 요청에 대한 재고확인이 3초를 넘어설 경우 Circuit Breaker 를 통하여 장애격리.
+* Spring FeignClient + Hystrix를 사용하여 구현함
+
+시나리오는 주문(Order)-->재고(Book) 확인 시 주문 요청에 대한 재고확인이 3초를 넘어설 경우 Circuit Breaker 를 통하여 장애격리.
 
 - Hystrix 를 설정:  FeignClient 요청처리에서 처리시간이 3초가 넘어서면 CB가 동작하도록 (요청을 빠르게 실패처리, 차단) 설정
                     추가로, 테스트를 위해 1번만 timeout이 발생해도 CB가 발생하도록 설정
@@ -835,13 +826,12 @@ kubectl create configmap resturl --from-literal=url=http://Book:8080
 ```
 ![image](https://user-images.githubusercontent.com/20077391/120970089-ed516d80-c7a5-11eb-8abb-d57cdbf77065.png)
 
+
 - 피호출 서비스(책재고:Book)에서 테스트를 위해 bookId가 2인 주문건에 대해 sleep 처리
 ```
 # (Book) BookController.java (Entity)
 ```
-
 ![image](https://user-images.githubusercontent.com/20077391/120971537-b54b2a00-c7a7-11eb-9595-8fa8cb444be5.png)
-
 
 
 
@@ -853,7 +843,7 @@ bookId가 1번 인 경우 정상적으로 주문 처리 완료
 ```
 ![image](https://user-images.githubusercontent.com/20077391/120970620-a152f880-c7a6-11eb-843a-855d85678638.png)
 
-bookId가 2번 인 경우 CB에 의한 timeout 발생 확인
+bookId가 2번 인 경우 CB에 의한 timeout 발생 확인 (Order건은 OutOfOrdered 처리됨)
 ```
 # http POST http://52.141.32.129:8080/orders bookId=2 customerId=4 qty=1
 ```
@@ -869,7 +859,8 @@ time 아웃이 연달아 2번 발생한 경우 CB가 OPEN되어 Book 호출이 �
 ![image](https://user-images.githubusercontent.com/20077391/120973450-ea587c00-c7a9-11eb-863b-f15dda3bdaa9.png)
 
 
-- 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌.
+- 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 Thread 자원 등을 보호하고 있음을 보여줌.
+
 
 
 ### 오토스케일 아웃
@@ -878,7 +869,6 @@ time 아웃이 연달아 2번 발생한 경우 CB가 OPEN되어 Book 호출이 �
 - 주문서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 테스트를 위해 CPU 사용량이 50프로를 넘어서면 replica 를 3개까지 늘려준다:
 ```
 Order의 hpa.yml
-
 ```
 ![image](https://user-images.githubusercontent.com/20077391/120973949-8aaea080-c7aa-11eb-80ce-eccb3c8cbc0d.png)
 
@@ -892,7 +882,7 @@ siege -c100 -t60S -r10 --content-type "application/json" 'http://52.141.32.129:8
 kubectl get deploy -l app=order -w
 ```
 
-- 어느정도 시간이 흐른 후 스케일 아웃이 벌어지는 것을 확인할 수 있다:
+- 어느정도 시간이 흐른 후 스케일 아웃이 벌어지는 것을 확인할 수 있다.
 
 ![image](https://user-images.githubusercontent.com/20077391/120974885-9babe180-c7ab-11eb-9a84-07bfb408ed34.png)
 
@@ -917,9 +907,14 @@ Shortest transaction:           0.11
 ```
 
 
-## 무정지 재배포
 
-* 무정지 재배포 확인을 위해 seige 로 1명이 지속적인 고객등록 작업을 수행함
+## Zero-downtime deploy (Readiness Probe) 무정지 재배포
+
+* Zero-downtime deploy를 위해 readiness Probe를 설정함
+![image](https://user-images.githubusercontent.com/20077391/121024696-6e792680-c7df-11eb-8cc3-ad8e1cbda949.png)
+
+
+* Zero-downtime deploy 확인을 위해 seige 로 1명이 지속적인 고객등록 작업을 수행함
 ```
 siege -c1 -t180S -r100 --content-type "application/json" 'http://localhost:8080/customers POST {"name": "CUSTOMER99","email":"CUSTOMER99@onlinebookstore.com"}'
 ```
@@ -939,7 +934,7 @@ customer 이미지가 변경되는 과정 (POD 상태변화)
 customer 이미지가 v2.0으로 변경되었임을 확인
 ![image](https://user-images.githubusercontent.com/20077391/120979060-27c00800-c7b0-11eb-8915-93197a3174b5.png)
 
-- seige 의 화면으로 넘어가서 Availability가 100% 인지 확인
+- seige 의 화면으로 넘어가서 Availability가 100% 인지 확인 (무정지 배포 성공)
 ```
 ** SIEGE 4.0.4
 ** Preparing 1 concurrent users for battle.
@@ -960,11 +955,6 @@ Shortest transaction:           0.00
 ```
 
 
-# deployment.yml 의 readiness probe 의 설정:
-
-yml 설정에 readiness 관련 설정을 추가하였으며, 검증은 기존 "무정지 배포"에서 이미 검증되었음을 확인함 (siege Availability 100% 확인)
-
-
 # Self-healing (Liveness Probe)
 
 - Self-healing 확인을 위한 Liveness Probe 옵션 변경 (Port 변경)
@@ -983,3 +973,8 @@ onlinebookstore/delivery/kubernetes/deployment.yml
 
 ![image](https://user-images.githubusercontent.com/20077391/120981283-7e2e4600-c7b2-11eb-92ef-2d5e4f2837eb.png)
 
+
+
+이상으로 12가지 체크포인트가 구현 및 검증 완료되었음 확인하였다.
+
+# 끗~
