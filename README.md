@@ -9,18 +9,21 @@
 
 - [온라인서점](#---)
   - [서비스 시나리오](#서비스-시나리오)
-  - [체크포인트](#체크포인트)
   - [분석/설계](#분석설계)
   - [구현:](#구현:)
     - [DDD 의 적용](#DDD-의-적용)
+    - [Gateway 적용](#gateway-적용)
+    - [CQRS](#cqrs)
     - [폴리글랏 퍼시스턴스](#폴리글랏-퍼시스턴스)
     - [동기식 호출 과 Fallback 처리](#동기식-호출-과-Fallback-처리)
-    - [비동기식 호출 과 Eventual Consistency](#비동기식-호출-시간적-디커플링-장애격리-최종-Eventual-일관성-테스트)
+    - [비동기식 호출 과 Eventual Consistency](#비동기식-호출--시간적-디커플링--장애격리--최종-eventual-일관성-테스트)
   - [운영](#운영)
-    - [CI/CD 설정](#cicd설정)
-    - [동기식 호출과 Fallback 처리](#동기식-호출-과-Fallback-처리)
+    - [Deploy / Pipeline](#deploy--pipeline)
+    - [Config Map](#configmap)
+    - [동기식 호출 / 서킷 브레이킹 / 장애격리](#동기식-호출--서킷-브레이킹--장애격리)
     - [오토스케일 아웃](#오토스케일-아웃)
-    - [무정지 재배포](#무정지-재배포)
+    - [무정지 재배포(Readiness Probe)](#무정지-재배포)
+    - [Self-healing (Liveness Prove)](#self-healing-liveness-probe)
 
 # 서비스 시나리오
 
