@@ -2,6 +2,7 @@ apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: customer-hpa
+  namespace: onlinebookstore
 spec:
   maxReplicas: 3
   minReplicas: 1
