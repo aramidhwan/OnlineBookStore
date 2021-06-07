@@ -52,7 +52,7 @@ spring:
   profiles: docker
   datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    url: jdbc:sqlserver://skccteam2.database.windows.net:1433;database=bookstore;user=skccteam2@skccteam2;password=skcc@123;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    url: jdbc:sqlserver://skccteam2.database.windows.net:1433;database=bookstore;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
     username: ${SQLSERVER_USERNAME}
     password: ${SQLSERVER_PASSWORD}
   jpa:
