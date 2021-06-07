@@ -45,7 +45,7 @@
     1. 주문 시 재고가 부족할 경우 주문이 되지 않는다. (Sync 호출)
 1. 장애격리
     1. 고객/마케팅/배달 관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다  Async (event-driven), Eventual Consistency
-    2. 고객시스템이 과중되면 사용자를 잠시동안 받지 않고 재접속하도록 유도한다  Circuit breaker, fallback
+    2. 재고시스템이 과중되면 사용자를 잠시동안 받지 않고 재접속하도록 유도한다  Circuit breaker, fallback
 
 
 # 분석/설계
@@ -321,18 +321,24 @@ http GET localhost:8088/myPages/
 ![image](https://user-images.githubusercontent.com/20077391/121018208-25be6f00-c7d9-11eb-8b1a-106718b53453.png)
 
 
-3. 고객시스템이 과중되면 사용자를 잠시동안 받지 않고 재접속하도록 유도한다 Circuit breaker, fallback
+3. 재고시스템이 과중되면 사용자를 잠시동안 받지 않고 재접속하도록 유도한다 Circuit breaker, fallback
 
 --> 뒤의 Hystrix를 통한 Circuit Break 구현에서 검증하도록 한다.
 
 ## Saga
 분석/설계 및 구현을 통해 이벤트를 Publish/Subscribe 하도록 구현하였다.
+[Publish]
 ![image](https://user-images.githubusercontent.com/20077391/121020310-353eb780-c7db-11eb-9e6e-2a0b0f9917e2.png)
+
+[Subscribe]
+![image](https://user-images.githubusercontent.com/20077391/121099508-ede41580-c832-11eb-826d-6f4d395193b0.png)
 
 
 ## CQRS
 Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다.
+
 본 프로젝트에서 View 역할은 CustomerCenter 서비스가 수행한다.
+
 CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스의 접근없이 CustomerCenter의 마이페이지를 통해 조회할 수 있도록 구현하였다.
 
 - 주문(ordered) 실행 후 myPage 화면
@@ -352,7 +358,7 @@ CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스�
 
 ## GateWay 
 API GateWay를 통하여 마이크로 서비스들의 진입점을 통일할 수 있다.
-다음과 같이 GateWay를 적용하였다.
+다음과 같이 GateWay를 적용하여 모든 마이크로서비스들은 http://localhost:8088/{context}로 접근할 수 있다.
 
 ``` (gateway) application.yaml
 
@@ -467,7 +473,7 @@ spring:
 ```
 
 
-## 동기식 호출(Req/Resp) 과 Fallback 처리
+## 동기식 호출(Req/Resp) 패턴
 
 분석단계에서의 조건 중 하나로 주문(Order)->책 재고 확인(Book) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 
 호출 프로토콜은 RestController를 FeignClient 를 이용하여 호출하도록 한다. 
@@ -480,46 +486,13 @@ spring:
 
 package onlinebookstore.external;
 
-@FeignClient(name="Book", url="${api.url.book}", fallbackFactory = BookServiceFallbackFactory.class)
+@FeignClient(name="Book", url="${api.url.book}")
 public interface BookService {
 
     @RequestMapping(method= RequestMethod.GET, path="/books/chkAndModifyStock")
     public boolean chkAndModifyStock(@RequestParam("bookId") Long bookId,
                                         @RequestParam("qty") int qty);
 
-}
-
-# (Order) BookServiceFallbackFactory.java FallBack 처리 
-
-package onlinebookstore.external;
-
-@Component
-public class BookServiceFallbackFactory implements FallbackFactory<BookService> {
-
-    @Override
-    public BookService create(Throwable cause) { 
-        return new BookService() {
-            @Override
-            public boolean chkAndModifyStock(Long bookId, int qty) {
-                // HystrixTimeoutException 일 경우 Book 재고 회복
-                if ( cause instanceof com.netflix.hystrix.exception.HystrixTimeoutException ) {
-                    // kafka에 이벤트 발생(Book 재고 회복)
-                    ChkAndModifyStockFallBacked chkAndModifyStockFallBacked = new ChkAndModifyStockFallBacked();
-                    chkAndModifyStockFallBacked.setBookId(bookId);
-                    chkAndModifyStockFallBacked.setQty(qty);
-                    chkAndModifyStockFallBacked.publish();
-                    System.out.println("** PUB :: ChkAndModifyStockFallBacked (by HystrixTimeoutException)");
-
-                // Hystrix circuit OPEN 일 경우 Book 재고 회복 불필요
-                } else {
-                    System.out.println("####### BookServiceFallbacked kind ########");
-                    System.out.println("####### " + cause.getMessage());
-                }
-
-                return false;
-            }
-        };
-    }
 }
 ```
 
@@ -576,7 +549,7 @@ mvn spring-boot:run
 http POST localhost:8088/orders bookId=1 qty=10 customerId=1   #Success
 http POST localhost:8088/orders bookId=2 qty=20 customerId=2   #Success
 ```
-
+추후 운영단계에서는 Circuit Breaker를 이용하여 재고 관리 시스템에 장애가 발생하여도 주문 접수는 가능하도록 개선할 예정이다.
 
 
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
@@ -664,7 +637,7 @@ http localhost:8080/orders     # 모든 주문의 상태가 "Delivery Started"�
 
 # 운영
 
-# Deploy / Pipeline
+## Deploy / Pipeline
 
 - git에서 소스 가져오기
 ```
@@ -785,7 +758,7 @@ spec:
 ![image](https://user-images.githubusercontent.com/20077391/121022073-fc9fdd80-c7dc-11eb-9f50-962556056728.png)
 
 
-# ConfigMap 
+## ConfigMap 
 - 시스템별로 변경 가능성이 있는 설정들을 ConfigMap을 사용하여 관리
 - OnlineBookStore에서는 주문에서 책 재고 서비스 호출 시 "호출 주소"를 ConfigMap 처리하기로 결정
 
@@ -813,7 +786,7 @@ kubectl create configmap resturl --from-literal=url=http://Book:8080
 
 
 
-## Circuit Breaker
+## Circuit Breaker와 Fallback 처리
 
 * Spring FeignClient + Hystrix를 사용하여 구현함
 
@@ -827,9 +800,16 @@ kubectl create configmap resturl --from-literal=url=http://Book:8080
 ![image](https://user-images.githubusercontent.com/20077391/120970089-ed516d80-c7a5-11eb-8abb-d57cdbf77065.png)
 
 
+- 호출 서비스(주문)에서는 재고API 호출에서 문제 발생 시 주문건을 OutOfStock 처리하도록 FallBack 구현
+```
+# (Order) BookService.java 
+```
+![image](https://user-images.githubusercontent.com/20077391/121100878-b034bc00-c835-11eb-97de-2bec90b7f3b0.png)
+
+
 - 피호출 서비스(책재고:Book)에서 테스트를 위해 bookId가 2인 주문건에 대해 sleep 처리
 ```
-# (Book) BookController.java (Entity)
+# (Book) BookController.java 
 ```
 ![image](https://user-images.githubusercontent.com/20077391/120971537-b54b2a00-c7a7-11eb-9595-8fa8cb444be5.png)
 
