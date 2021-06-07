@@ -841,30 +841,25 @@ Shortest transaction:           0.11
 
 ## 무정지 재배포
 
-* 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscaler 이나 CB 설정을 제거함
-
-- seige 로 배포작업 직전에 워크로드를 모니터링 함.
+* 무정지 재배포 확인을 위해 seige 로 1명이 지속적인 고객등록 작업을 수행함
 ```
-siege -c100 -t120S -r10 --content-type "application/json" 'http://localhost:8081/orders POST {"item": "chicken"}'
-
-** SIEGE 4.0.5
-** Preparing 100 concurrent users for battle.
-The server is now under siege...
-
-HTTP/1.1 201     0.68 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.68 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.70 secs:     207 bytes ==> POST http://localhost:8081/orders
-HTTP/1.1 201     0.70 secs:     207 bytes ==> POST http://localhost:8081/orders
-:
+siege -c1 -t180S -r100 --content-type "application/json" 'http://localhost:8080/customers POST {"name": "CUSTOMER99","email":"CUSTOMER99@onlinebookstore.com"}'
 
 ```
 
-- 새버전으로의 배포 시작
-```
-kubectl set image ...
+먼저 customer 이미지가 v1.0 임을 확인
+
+![image](https://user-images.githubusercontent.com/20077391/120977602-78366600-c7ae-11eb-9b17-c0aafa8ed30f.png)
+
 ```
 
-- seige 의 화면으로 넘어가서 Availability 가 100% 미만으로 떨어졌는지 확인
+새 버전으로 배포(이미지를 v2.0으로 변경)
+
+```
+kubectl set image deployment customer customer=skccteam2acr.azurecr.io/customer:v2.0
+```
+
+- seige 의 화면으로 넘어가서 Availability가 100% 인지 확인
 ```
 Transactions:		        3078 hits
 Availability:		       70.45 %
