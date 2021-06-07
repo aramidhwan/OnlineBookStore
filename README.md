@@ -847,28 +847,40 @@ siege -c1 -t180S -r100 --content-type "application/json" 'http://localhost:8080/
 ```
 
 먼저 customer 이미지가 v1.0 임을 확인
-![image](https://user-images.githubusercontent.com/20077391/120977602-78366600-c7ae-11eb-9b17-c0aafa8ed30f.png)
+![image](https://user-images.githubusercontent.com/20077391/120979102-31e20680-c7b0-11eb-8bb6-53481781e62c.png)
 
 새 버전으로 배포(이미지를 v2.0으로 변경)
 ```
 kubectl set image deployment customer customer=skccteam2acr.azurecr.io/customer:v2.0
 ```
 
+customer 이미지가 변경되는 과정 (POD 상태변화)
+![image](https://user-images.githubusercontent.com/20077391/120978979-0bbc6680-c7b0-11eb-91e9-7317f2b15ee8.png)
+
+
+customer 이미지가 v2.0으로 변경되었임을 확인
+![image](https://user-images.githubusercontent.com/20077391/120979060-27c00800-c7b0-11eb-8915-93197a3174b5.png)
+
 - seige 의 화면으로 넘어가서 Availability가 100% 인지 확인
 ```
-Transactions:		        3078 hits
-Availability:		       70.45 %
-Elapsed time:		       120 secs
-Data transferred:	        0.34 MB
-Response time:		        5.60 secs
-Transaction rate:	       17.15 trans/sec
-Throughput:		        0.01 MB/sec
-Concurrency:		       96.02
-
+** SIEGE 4.0.4
+** Preparing 1 concurrent users for battle.
+The server is now under siege...
+Lifting the server siege...
+Transactions:                  15793 hits
+Availability:                 100.00 %
+Elapsed time:                 179.41 secs
+Data transferred:               3.31 MB
+Response time:                  0.01 secs
+Transaction rate:              88.03 trans/sec
+Throughput:                     0.02 MB/sec
+Concurrency:                    0.99
+Successful transactions:           0
+Failed transactions:               0
+Longest transaction:            0.29
+Shortest transaction:           0.00
 ```
-배포기간중 Availability 가 평소 100%에서 70% 대로 떨어지는 것을 확인. 원인은 쿠버네티스가 성급하게 새로 올려진 서비스를 READY 상태로 인식하여 서비스 유입을 진행한 것이기 때문. 이를 막기위해 Readiness Probe 를 설정함:
 
-```
 # deployment.yaml 의 readiness probe 의 설정:
 
 
