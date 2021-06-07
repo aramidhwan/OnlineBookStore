@@ -707,8 +707,8 @@ spec:
       - name: order-vol
         persistentVolumeClaim:
           claimName: orderh2-pvc
-
 ```	  
+
 - deploy 완료
 
 ![image](https://user-images.githubusercontent.com/20077391/120963003-cc841a80-c79b-11eb-81ff-015a63cdf7ec.png)
@@ -801,9 +801,9 @@ time 아웃이 연달아 2번 발생한 경우 CB가 OPEN되어 Book 호출이 �
 ```
 Order의 hpa.yml
 
+```
 ![image](https://user-images.githubusercontent.com/20077391/120973949-8aaea080-c7aa-11eb-80ce-eccb3c8cbc0d.png)
 
-```
 - 100명이 60초 동안 주문을 넣어준다.
 ```
 siege -c100 -t60S -r10 --content-type "application/json" 'http://52.141.32.129:8080/orders POST {"bookId":"1","customerId":"1","qty":"1"}
@@ -814,11 +814,9 @@ siege -c100 -t60S -r10 --content-type "application/json" 'http://52.141.32.129:8
 kubectl get deploy -l app=order -w
 ```
 - 어느정도 시간이 흐른 후 스케일 아웃이 벌어지는 것을 확인할 수 있다:
-```
+
 ![image](https://user-images.githubusercontent.com/20077391/120974885-9babe180-c7ab-11eb-9a84-07bfb408ed34.png)
 
-:
-```
 - siege 의 로그를 보면 오토스케일 확장이 일어나며 주문을 100% 처리완료한 것을 알 수 있었다.
 ```
 ** SIEGE 4.0.4
