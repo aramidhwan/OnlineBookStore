@@ -244,6 +244,120 @@ http GET localhost:8088/orders/1
 
 ```
 
+# GateWay 적용
+API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다.
+다음과 같이 GateWay를 적용하였다.
+
+``` (gateway) application.yaml
+
+server:
+  port: 8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: CustomerCenter
+          uri: http://localhost:8081
+          predicates:
+            - Path= /myPages/**
+        - id: Book
+          uri: http://localhost:8082
+          predicates:
+            - Path=/books/** 
+        - id: Order
+          uri: http://localhost:8083
+          predicates:
+            - Path=/orders/** 
+        - id: Delivery
+          uri: http://localhost:8084
+          predicates:
+            - Path=/deliveries/** 
+        - id: customer
+          uri: http://localhost:8085
+          predicates:
+            - Path=/customers/** 
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: customercenter
+          uri: http://customercenter:8080
+          predicates:
+            - Path= /marketingTargets/**,/outOfStockOrders/**,/myPages/**
+        - id: Book
+          uri: http://Book:8080
+          predicates:
+            - Path=/books/** 
+        - id: Order
+          uri: http://Order:8080
+          predicates:
+            - Path=/orders/** 
+        - id: Delivery
+          uri: http://Delivery:8080
+          predicates:
+            - Path=/deliveries/** 
+        - id: customer
+          uri: http://customer:8080
+          predicates:
+            - Path=/customers/** 
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080
+
+
+```
+
+# CQRS
+Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다.
+본 프로젝트에서 View 역할은 CustomerCenter 서비스가 수행한다.
+
+- 주문(ordered) 실행 후 myPage 화면
+
+![증빙2] ![image](https://user-images.githubusercontent.com/20077391/120961319-91341c80-c798-11eb-8081-efec0fff119f.png)
+
+
+- 주문취소(OrderCancelled) 후 myPage 화면
+
+![증빙3] ![image](https://user-images.githubusercontent.com/20077391/120961678-3d760300-c799-11eb-829c-16f296d61f27.png)
+
+
+위와 같이 주문을 하게되면 Order -> Book -> Order -> Delivery 로 주문이 Assigend 되고
+
+주문 취소가 되면 Status가 "Delivery Cancelled" Update 되는 것을 볼 수 있다.
+
+또한 Correlation을 key를 활용하여 orderId를 Key값을 하고 원하는 주문하고 서비스간의 공유가 이루어 졌다.
+
+위 결과로 서로 다른 마이크로 서비스 간에 트랜잭션이 묶여 있음을 알 수 있다.
+
 
 ## 폴리글랏 퍼시스턴스
 
@@ -267,7 +381,7 @@ spring:
   profiles: default
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:./orderdb
+    url: jdbc:h2:file:/data/orderdb
     username: sa
     password: 
 ```
@@ -471,10 +585,154 @@ http localhost:8080/orders     # 모든 주문의 상태가 "Delivery Started"�
 
 # 운영
 
-## yaml 파일 설정
+# Deploy / Pipeline
+
+- git에서 소스 가져오기
+```
+git clone https://github.com/aramidhwan/OnlineBookStore.git
+```
+- Build 하기
+```
+cd /book
+mvn package
+
+cd ../customer
+mvn package
+
+cd ../customercenter
+mvn package
+
+cd ../order
+mvn package
+
+cd ../delivery
+mvn package
+
+cd ../gateway
+mvn package
+
+```
+
+- Docker Image build/Push/
+```
+
+cd ../gateway
+docker build -t skccteam2acr.azurecr.io/gateway:latest .
+docker push skccteam2acr.azurecr.io/gateway:latest
+
+cd ../book
+docker build -t skccteam2acr.azurecr.io/book:latest .
+docker push skccteam2acr.azurecr.io/book:latest
+
+cd ../customer
+docker build -t skccteam2acr.azurecr.io/customer:latest .
+docker push skccteam2acr.azurecr.io/customer:latest
+
+cd ../customercenter
+docker build -t skccteam2acr.azurecr.io/customercenter:latest .
+docker push skccteam2acr.azurecr.io/customercenter:latest
+
+cd ../order
+docker build -t skccteam2acr.azurecr.io/order:latest .
+docker push skccteam2acr.azurecr.io/order:latest
+
+cd ../delivery
+docker build -t skccteam2acr.azurecr.io/delivery:latest .
+docker push skccteam2acr.azurecr.io/delivery:latest
 
 
-각 구현체들은 각자의 yaml 파일로 구성되었다. (deployment.yml, service.yml)
+```
+
+- yml파일 이용한 deploy
+```
+cd ..
+cd SirenOrder
+az acr build --registry skteam01 --image skteam01.azurecr.io/sirenorder:v1 .
+```
+![증빙7](https://user-images.githubusercontent.com/77368578/107920373-35a70e80-6fb0-11eb-8024-a6fc42fea93f.png)
+
+```
+kubectl expose deploy shop --type=ClusterIP --port=8080 -n tutorial
+```
+
+- winterone/SirenOrder/kubernetes/deployment.yml 파일 
+```yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sirenorder
+  namespace: tutorial
+  labels:
+    app: sirenorder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sirenorder
+  template:
+    metadata:
+      labels:
+        app: sirenorder
+    spec:
+      containers:
+        - name: sirenorder
+          image: hispres.azurecr.io/sirenorder:v4
+          ports:
+            - containerPort: 8080
+          env:
+            - name: configurl
+              valueFrom:
+                configMapKeyRef:
+                  name: apiurl
+                  key: url
+```	  
+- deploy 완료
+
+![전체 MSA](https://user-images.githubusercontent.com/77368578/108006011-992b4d80-703d-11eb-8df9-a2cea19aa693.png)
+
+# ConfigMap 
+- 시스템별로 변경 가능성이 있는 설정들을 ConfigMap을 사용하여 관리
+
+- application.yml 파일에 ${configurl} 설정
+
+```yaml
+      feign:
+        hystrix:
+          enabled: true
+      hystrix:
+        command:
+          default:
+            execution.isolation.thread.timeoutInMilliseconds: 610
+      api:
+        url:
+          Payment: ${configurl}
+
+```
+
+- ConfigMap 사용(/SirenOrder/src/main/java/winterschoolone/external/PaymentService.java) 
+
+```java
+
+      @FeignClient(name="Payment", url="${api.url.Payment}")
+      public interface PaymentService {
+      
+	      @RequestMapping(method= RequestMethod.POST, path="/payments")
+              public void pay(@RequestBody Payment payment);
+	      
+      }
+```
+
+- Deployment.yml 에 ConfigMap 적용
+
+![image](https://user-images.githubusercontent.com/74236548/107925407-c2a19600-6fb7-11eb-9325-6bd2cd94455c.png)
+
+- ConfigMap 생성
+
+```
+kubectl create configmap apiurl --from-literal=url=http://10.0.92.205:8080 -n tutorial
+```
+
+   ![image](https://user-images.githubusercontent.com/74236548/107968395-aa4e6d00-6ff1-11eb-9112-2f1d77a561ad.png)
 
 
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
@@ -518,8 +776,23 @@ feign:
 - 60초 동안 실시
 
 ```
-$ siege -c100 -t60S -r10 --content-type "application/json" 'http POST http://52.141.32.129:8080/orders bookId=1 customerId=1 qty=10'
+# siege -c100 -t60S -r10 --content-type "application/json" 'http://52.141.32.129:8080/orders POST {"bookId": "1","customerId":"1","qty":"1"}'
 
+Transactions:                   1754 hits
+Availability:                  60.97 %
+Elapsed time:                  53.30 secs
+Data transferred:               0.76 MB
+Response time:                  3.03 secs
+Transaction rate:              32.91 trans/sec
+Throughput:                     0.01 MB/sec
+Concurrency:                   99.67
+Successful transactions:        1754
+Failed transactions:            1123
+Longest transaction:            9.93
+Shortest transaction:           0.00
+
+
+===================================
 ** SIEGE 4.0.5
 ** Preparing 100 concurrent users for battle.
 The server is now under siege...
