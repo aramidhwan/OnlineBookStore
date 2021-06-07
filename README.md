@@ -717,19 +717,15 @@ spec:
 
 - application.yml 파일에 ${configmap} 설정
 
-```yaml
 
 ![image](https://user-images.githubusercontent.com/20077391/120963090-f0dff700-c79b-11eb-88b4-247efe73a301.png)
 
-```
 
 - ConfigMap 사용(/Order/src/main/java/onlinebookstore/external/BookService.java) 
 
-```java
 
 ![image](https://user-images.githubusercontent.com/20077391/120963151-05bc8a80-c79c-11eb-81f1-a076d4d46c7f.png)
 
-```
 
 - Deployment.yml 에 ConfigMap 적용
 
