@@ -725,7 +725,7 @@ spec:
 - ConfigMap 사용(/Order/src/main/java/onlinebookstore/external/BookService.java) 
 
 
-![image](https://user-images.githubusercontent.com/20077391/120963151-05bc8a80-c79c-11eb-81f1-a076d4d46c7f.png)
+![image](https://user-images.githubusercontent.com/20077391/120964977-24705080-c79f-11eb-8e5b-be9f8e6d2128.png)
 
 
 - Deployment.yml 에 ConfigMap 적용
