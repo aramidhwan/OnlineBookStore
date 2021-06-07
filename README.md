@@ -802,23 +802,24 @@ kubectl get all -n tutorial
 ```
 
 * 서킷 브레이커 동작 확인:
-``
+
 bookId가 1번 인 경우 정상적으로 주문 처리 완료
-
+```
 # http POST http://52.141.32.129:8080/orders bookId=1 customerId=4 qty=1
-
+```
 ![image](https://user-images.githubusercontent.com/20077391/120970620-a152f880-c7a6-11eb-843a-855d85678638.png)
 
 bookId가 2번 인 경우 CB에 의한 timeout 발생 확인
+```
 # http POST http://52.141.32.129:8080/orders bookId=2 customerId=4 qty=1
-
+```
 ![image](https://user-images.githubusercontent.com/20077391/120970699-bcbe0380-c7a6-11eb-8c71-ad71101ca1dc.png)
 
 time 아웃이 연달아 2번 발생한 경우 CB가 OPEN되어 Book 호출이 아예 차단된 것을 확인 (테스트를 위해 circuitBreaker.requestVolumeThreshold=1 로 설정)
 
 ![image](https://user-images.githubusercontent.com/20077391/120970889-fabb2780-c7a6-11eb-9ab9-e44700c270a7.png)
 
-```
+
 - 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌. 하지만, 63.55% 가 성공하였고, 46%가 실패했다는 것은 고객 사용성에 있어 좋지 않기 때문에 Retry 설정과 동적 Scale out (replica의 자동적 추가,HPA) 을 통하여 시스템을 확장 해주는 후속처리가 필요.
 
 - Retry 의 설정 (istio)
