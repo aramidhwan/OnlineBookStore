@@ -338,43 +338,82 @@ server:
 
 ```
 
+# 기능적 요구사항 검증
+
+고객이 도서를 주문한다.
+--> 정상적으로 주문됨을 확인하였음
+![image](https://user-images.githubusercontent.com/20077391/121013903-5e0f7e80-c7d4-11eb-9edf-6c77e4233085.png)
+
+고객이 주문을 취소할 수 있다.
+
+
+주문이 성공하면 배송을 시작한다.
+--> 정상적으로 배송 시작됨을 확인하였음
+![image](https://user-images.githubusercontent.com/20077391/121014192-aa5abe80-c7d4-11eb-8b9f-f17e51662769.png)
+
+주문이 취소되면 배송을 취소한다.
+--> 주문과 배송 시스템에서 각각 취소되었음을 확인하였음
+![image](https://user-images.githubusercontent.com/20077391/121015316-d165c000-c7d5-11eb-89ae-4ef61c90adc9.png)
+![image](https://user-images.githubusercontent.com/20077391/121015454-f9edba00-c7d5-11eb-885b-af20cf53cd22.png)
+
+관리자가 신규도서를 등록한다.
+--> 정상적으로 등록됨을 확인하였음
+![image](https://user-images.githubusercontent.com/20077391/121013489-d7f33800-c7d3-11eb-8c46-3e40e5fc6be3.png)
+
+관리자가 도서 재고를 추가한다.
+--> 정상적으로 재고가 늘어남을 확인하였음
+![image](https://user-images.githubusercontent.com/20077391/121015711-41744600-c7d6-11eb-96da-c11b1a800f93.png)
+
+고객은 회원가입을 한다.
+--> 정상적으로 등록됨을 확인하였음
+![image](https://user-images.githubusercontent.com/20077391/121013551-eccfcb80-c7d3-11eb-99e9-5946cf5cf5bd.png)
+
+도서 주문 실적에 따라 고객의 마일리지 및 등급을 관리한다.
+--> 주문했던 고객의 등급과 마일리지가 올라간 것을 알 수 있다.
+![image](https://user-images.githubusercontent.com/20077391/121014460-f7d72b80-c7d4-11eb-8b35-6e3a8ffa08bc.png)
+
+신규 도서가 등록되면 기존 고객에게 알려준다.
+--> SNS가 발송됨을 확인하였음
+![image](https://user-images.githubusercontent.com/20077391/121014951-7633cd80-c7d5-11eb-94f1-cf704f4a9fc1.png)
+
+도서가 재입고되면 재고부족으로 못 구매한 고객에게 알려준다.
+![image](https://user-images.githubusercontent.com/20077391/121015814-6072d800-c7d6-11eb-9786-c02c5a48189b.png)
+
 # CQRS
 Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다.
 본 프로젝트에서 View 역할은 CustomerCenter 서비스가 수행한다.
 
 - 주문(ordered) 실행 후 myPage 화면
 
-![증빙2] ![image](https://user-images.githubusercontent.com/20077391/120961319-91341c80-c798-11eb-8081-efec0fff119f.png)
+![image](https://user-images.githubusercontent.com/20077391/120961319-91341c80-c798-11eb-8081-efec0fff119f.png)
 
 
 - 주문취소(OrderCancelled) 후 myPage 화면
 
-![증빙3] ![image](https://user-images.githubusercontent.com/20077391/120961678-3d760300-c799-11eb-829c-16f296d61f27.png)
+![image](https://user-images.githubusercontent.com/20077391/120961678-3d760300-c799-11eb-829c-16f296d61f27.png)
 
 
 위와 같이 주문을 하게되면 Order -> Book -> Order -> Delivery 로 주문이 Assigend 되고
 
-주문 취소가 되면 Status가 "Delivery Cancelled" Update 되는 것을 볼 수 있다.
+주문 취소가 되면 Status가 "Delivery Cancelled"로 Update 되는 것을 볼 수 있다.
 
-또한 Correlation을 key를 활용하여 orderId를 Key값을 하고 원하는 주문하고 서비스간의 공유가 이루어 졌다.
-
-위 결과로 서로 다른 마이크로 서비스 간에 트랜잭션이 묶여 있음을 알 수 있다.
 
 
 ## 폴리글랏 퍼시스턴스
 
+폴리글랏을 위해 각 마이크로서비스의 담당자들이 원하는 DBMS로 구현하였다.
 Book, CustomerCenter, Customer, Delivery는 MySQL 을 이용하며, Order는 H2 DB를 File Mode로 이용한다.
 
 ```
-# (Book) application.yml
+# (Book, CustomerCenter, Customer, Delivery) application.yml
 
 spring:
   profiles: default
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/bookdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: bookAdmin
-    password: book
+    username: *****
+    password: *****
 ...
 
 # (Order) application.yml
@@ -384,7 +423,7 @@ spring:
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:file:/data/orderdb
-    username: sa
+    username: *****
     password: 
 ```
 
