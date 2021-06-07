@@ -807,12 +807,13 @@ Order의 hpa.yml
 - 100명이 60초 동안 주문을 넣어준다.
 ```
 siege -c100 -t60S -r10 --content-type "application/json" 'http://52.141.32.129:8080/orders POST {"bookId":"1","customerId":"1","qty":"1"}
-
 ```
+
 - 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
 ```
 kubectl get deploy -l app=order -w
 ```
+
 - 어느정도 시간이 흐른 후 스케일 아웃이 벌어지는 것을 확인할 수 있다:
 
 ![image](https://user-images.githubusercontent.com/20077391/120974885-9babe180-c7ab-11eb-9a84-07bfb408ed34.png)
@@ -835,7 +836,6 @@ Successful transactions:        2904
 Failed transactions:               0
 Longest transaction:           13.62
 Shortest transaction:           0.11
-
 ```
 
 
@@ -844,17 +844,12 @@ Shortest transaction:           0.11
 * 무정지 재배포 확인을 위해 seige 로 1명이 지속적인 고객등록 작업을 수행함
 ```
 siege -c1 -t180S -r100 --content-type "application/json" 'http://localhost:8080/customers POST {"name": "CUSTOMER99","email":"CUSTOMER99@onlinebookstore.com"}'
-
 ```
 
 먼저 customer 이미지가 v1.0 임을 확인
-
 ![image](https://user-images.githubusercontent.com/20077391/120977602-78366600-c7ae-11eb-9b17-c0aafa8ed30f.png)
 
-```
-
 새 버전으로 배포(이미지를 v2.0으로 변경)
-
 ```
 kubectl set image deployment customer customer=skccteam2acr.azurecr.io/customer:v2.0
 ```
