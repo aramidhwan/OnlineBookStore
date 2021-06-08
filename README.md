@@ -18,6 +18,7 @@
     - [비기능적 요구사항 검증](#비기능적-요구사항-검증)
     - [Saga](#saga)
     - [CQRS](#cqrs)
+    - [Correlation](#correlation)
     - [GateWay](#gateway)
     - [Polyglot](#polyglot)
     - [동기식 호출(Req/Resp) 패턴](#동기식-호출reqresp-패턴)
