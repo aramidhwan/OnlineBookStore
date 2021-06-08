@@ -365,6 +365,9 @@ CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스�
 
 주문 취소가 되면 Status가 "Delivery Cancelled"로 Update 되는 것을 볼 수 있다.
 
+## Correlation 
+각 이벤트 건(메시지)이 어떤 Policy를 처리할 때 어떤건에 연결된 처리건인지를 구별하기 위한 Correlation-key를 제대로 연결하였는지를 검증하였다.
+![image](https://user-images.githubusercontent.com/20077391/121104779-b333aa80-c83d-11eb-9110-e56c6be57c86.png)
 
 ## GateWay 
 API GateWay를 통하여 마이크로 서비스들의 진입점을 통일할 수 있다.
