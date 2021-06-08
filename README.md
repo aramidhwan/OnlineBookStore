@@ -226,7 +226,7 @@ public class Order {
 
 
 ```
-- Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (MySQL or h2) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
+- Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (MySQL or h2) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다. (로컬개발환경에서는 MySQL/H2를, 쿠버네티스에서는 SQLServer/H2를 각각 사용하였다)
 ```
 package onlinebookstore;
 
@@ -459,7 +459,7 @@ server:
 
 각 마이크로서비스의 다양한 요구사항에 능동적으로 대처하고자 최적의 구현언어 및 DBMS를 선택할 수 있다.
 OnlineBookStore에서는 다음과 같이 2가지 DBMS를 적용하였다.
-- MySQL : Book, CustomerCenter, Customer, Delivery
+- MySQL(쿠버네티스에서는 SQLServer) : Book, CustomerCenter, Customer, Delivery
 - H2    : Order
 
 ```
@@ -472,6 +472,14 @@ spring:
     url: jdbc:mysql://localhost:3306/bookdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: *****
     password: *****
+
+spring:
+  profiles: docker
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://skccteam2.database.windows.net:1433;database=bookstore;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: ${SQLSERVER_USERNAME}
+    password: ${SQLSERVER_PASSWORD}
 ...
 
 # (Order) application.yml
