@@ -26,6 +26,7 @@
   - [운영](#운영)
     - [Deploy / Pipeline](#deploy--pipeline)
     - [Config Map](#configmap)
+    - [Secret](#secret)
     - [Circuit Breaker와 Fallback 처리](#circuit-breaker와-fallback-처리)
     - [오토스케일 아웃](#오토스케일-아웃)
     - [Zero-downtime deploy (Readiness Probe) 무정지 재배포](#zero-downtime-deploy-readiness-probe-무정지-재배포)
@@ -806,6 +807,16 @@ kubectl create configmap resturl --from-literal=url=http://Book:8080
 
 ![image](https://user-images.githubusercontent.com/20077391/120965103-58e40c80-c79f-11eb-8abd-d3a98048166e.png)
 
+
+## Secret 
+- DBMS 연결에 필요한 username 및 password는 민감한 정보이므로 Secret 처리하였다.
+![image](https://user-images.githubusercontent.com/20077391/121105591-59cc7b00-c83f-11eb-96b7-e9649498fdf2.png)
+
+- deployment.yml에서 env로 설정하였다.
+![image](https://user-images.githubusercontent.com/20077391/121105685-841e3880-c83f-11eb-9c3e-645f4a21cb8a.png)
+
+- 쿠버네티스에서는 다음과 같이 Secret object를 생성하였다.
+![image](https://user-images.githubusercontent.com/20077391/121105756-a9ab4200-c83f-11eb-902a-bc276651bf7b.png)
 
 
 ## Circuit Breaker와 Fallback 처리
