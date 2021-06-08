@@ -810,12 +810,15 @@ kubectl create configmap resturl --from-literal=url=http://Book:8080
 
 ## Secret 
 - DBMS 연결에 필요한 username 및 password는 민감한 정보이므로 Secret 처리하였다.
+
 ![image](https://user-images.githubusercontent.com/20077391/121105591-59cc7b00-c83f-11eb-96b7-e9649498fdf2.png)
 
 - deployment.yml에서 env로 설정하였다.
+
 ![image](https://user-images.githubusercontent.com/20077391/121105685-841e3880-c83f-11eb-9c3e-645f4a21cb8a.png)
 
 - 쿠버네티스에서는 다음과 같이 Secret object를 생성하였다.
+
 ![image](https://user-images.githubusercontent.com/20077391/121105756-a9ab4200-c83f-11eb-902a-bc276651bf7b.png)
 
 
